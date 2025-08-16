@@ -75,9 +75,17 @@ function hookRegisterSubmit() {
   };
 
   // מאזיני submit + קליקים על כפתורי תשלום נפוצים
-  form.addEventListener('submit', handler);
-  document.querySelectorAll('[data-pay], .pay-now, .go-pay, a[href*="meshulam"], button.pay')
-    .forEach(el => el.addEventListener('click', handler));
+document
+  .querySelectorAll('[data-pay], .pay-now, .go-pay, a[href*="meshulam"], button.pay, .btn.primary')
+  .forEach(el => {
+    // מאזין בקפטצ'ר כדי לרוץ לפני מאזינים אחרים שמבצעים ניווט
+    el.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      handler(e);
+    }, true); // ← capture=true
+  });
+
 }
 
 document.addEventListener('DOMContentLoaded', hookRegisterSubmit);
