@@ -3,7 +3,25 @@
 */
 
 const apiBase = location.origin;
-const getGroup = () => new URL(location.href).searchParams.get('group') || '';
+
+function getGroupFromURL() {
+  const sp = new URL(location.href).searchParams;
+  return sp.get('group') || sp.get('groupId') || '';
+}
+
+function resolveGroup() {
+  // 1) מהכתובת
+  let g = getGroupFromURL();
+  if (g) return g;
+
+  // 2) מהשדה החבוי בטופס
+  g = document.getElementById('groupKey')?.value || '';
+  if (g) return g;
+
+  // 3) ממשתנה גלובלי/נתון על body
+  g = (window.CURRENT_GROUP) || (document.body?.dataset?.group) || '';
+  return g;
+}
 
 function $pick(selectors) {
   for (const s of selectors) {
@@ -30,12 +48,12 @@ async function enrollAndRedirect(payload, grpId, selected_option) {
   location.href = url;
 }
 
-/** פונקציה גלובלית שמחוברת לכפתור דרך onclick */
+/** פונקציה גלובלית שמופעלת מהכפתור */
 window.saveThenPay = async function saveThenPay(e) {
   if (e) { e.preventDefault(); e.stopImmediatePropagation(); }
 
-  const grpId = getGroup();
-  if (!grpId) { alert('קישור שגוי (חסר group)'); return false; }
+  const grpId = resolveGroup();
+  if (!grpId) { alert('קישור שגוי (חסר group/groupId)'); return false; }
 
   const class_id = window.CLASS_IDS?.[grpId];
   if (!class_id) { alert('לא הוגדר class_id לקבוצה זו'); return false; }
@@ -68,7 +86,7 @@ window.saveThenPay = async function saveThenPay(e) {
   return false;
 };
 
-/* אופציונלי: נחבר גם submit/לחיצות בצורה גנרית — אבל ה-onclick כבר פותר הכל */
+// חיבור כללי (גם אם לוחצים על כפתור אחר/submit)
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.querySelector('#regForm') || document.querySelector('form');
   if (form) {
@@ -83,5 +101,5 @@ document.addEventListener('DOMContentLoaded', () => {
       e.preventDefault();
       e.stopImmediatePropagation();
       window.saveThenPay(e);
-    }, true));
+    }, true)); // capture=true
 });
