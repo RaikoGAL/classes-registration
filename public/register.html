@@ -46,12 +46,13 @@ select.wide{width:320px}.form{display:grid;grid-template-columns:repeat(2,1fr);g
 </button>
 
 </div></form></div><div class="footer">בגרסה זו ההפניה היא ישירות ל‑Meshulam לקישור המתאים.</div></div>
-  <script defer src="script.js"></script>
-  <script>
+<!-- היה: <script defer src="script.js"></script> -->
+<script src="script.js"></script>
+
+<script>
   (function () {
-    var url = new URL(location.href);
-    var p = url.searchParams;
-    var g = p.get('group') || p.get('groupId') || '';
+    var sp = new URL(location.href).searchParams;
+    var g = sp.get('group') || sp.get('groupId') || '';
     if (g) {
       window.CURRENT_GROUP = g;
       document.body.dataset.group = g;
@@ -60,6 +61,8 @@ select.wide{width:320px}.form{display:grid;grid-template-columns:repeat(2,1fr);g
     }
   })();
 </script>
-    <script src="payments.js"></script>
+
+<script src="payments.js"></script>
+
 </body>
 </html>
