@@ -34,7 +34,14 @@ select.wide{width:320px}.form{display:grid;grid-template-columns:repeat(2,1fr);g
   <option value="day2">מפגש 2</option>
   <option value="both">שני המפגשים</option>
 </select>
-</label><div id="sessionsList" class="sessions"></div></div><h3 style="margin-top:10px;">פרטי המשתתף/ת</h3><form id="regForm" class="form"><div><label>שם פרטי<input id="firstName" required></label></div><div><label>שם משפחה<input id="lastName" required></label></div><div><label>תאריך לידה<input id="birthDate" type="date"></label></div><div><label>שם הורה (אם רלוונטי)<input id="parentName"></label></div><div><label>טלפון<input id="phone" required></label></div><div><label>אימייל<input id="email" type="email"></label></div><div class="full"><label>הערות<textarea id="notes" rows="3" placeholder="מידע רפואי/בקשות"></textarea></label></div><div class="full"><button class="btn primary pay-now" data-pay="1" type="submit">מעבר לתשלום</button>
+</label><div id="sessionsList" class="sessions"></div></div><h3 style="margin-top:10px;">פרטי המשתתף/ת</h3><form id="regForm" class="form"><div><label>שם פרטי<input id="firstName" required></label></div><div><label>שם משפחה<input id="lastName" required></label></div><div><label>תאריך לידה<input id="birthDate" type="date"></label></div><div><label>שם הורה (אם רלוונטי)<input id="parentName"></label></div><div><label>טלפון<input id="phone" required></label></div><div><label>אימייל<input id="email" type="email"></label></div><div class="full"><label>הערות<textarea id="notes" rows="3" placeholder="מידע רפואי/בקשות"></textarea></label></div><div class="full"><button
+  type="button"
+  class="btn primary pay-now"
+  onclick="return saveThenPay(event)"
+>
+  מעבר לתשלום
+</button>
+
 </div></form></div><div class="footer">בגרסה זו ההפניה היא ישירות ל‑Meshulam לקישור המתאים.</div></div><script defer src="script.js"></script>
     <script src="payments.js"></script>
 </body>
