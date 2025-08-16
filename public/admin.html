@@ -1,33 +1,206 @@
 <!doctype html>
-<html lang="he">
+<html lang="he" dir="rtl">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>אדמין — נרשמים לחוגים</title>
+  <title>אדמין — רישום חוגים</title>
   <style>
-html{direction:rtl}*{box-sizing:border-box}body{margin:0;padding:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,"Noto Sans Hebrew","Rubik",sans-serif;background:#0b0d12;color:#e6e8ee}
-a{color:#a4c2ff;text-decoration:none}.container{max-width:1200px;margin:0 auto;padding:24px}
-.header{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}.logo{font-weight:800;letter-spacing:.3px}
-.header .actions{display:flex;gap:10px;flex-wrap:wrap}.header .actions a,.btn{display:inline-block;padding:12px 18px;border-radius:14px;border:1px solid #2a3246;background:#121826;color:#e6e8ee;transition:all .2s;font-size:16px}
-h1,h2,h3{margin:16px 0 8px}.subtle{color:#9aa4b2;font-size:14px}
-.card{background:linear-gradient(180deg,#0f1422,#0b0f1a);border:1px solid #253048;border-radius:18px;padding:16px;display:flex;flex-direction:column;min-height:220px}
-.grid{display:grid;gap:16px}.grid.timetable{grid-template-columns:repeat(3,1fr)}
-.kv{display:flex;flex-wrap:wrap;gap:8px 10px;font-size:14px;color:#cbd5e1}.badge{font-size:12px;padding:4px 8px;background:#12233d;border:1px solid #2a4778;border-radius:999px;color:#cfe1ff}
-.sessions{margin:8px 0;display:flex;flex-wrap:wrap;gap:6px}.session{font-size:12px;padding:4px 8px;border-radius:999px;background:#132236;border:1px dashed #2a4778}
-.cta{margin-top:auto;display:flex;justify-content:space-between;align-items:center;gap:12px}.price{font-size:14px;color:#cbd5e1}.btn.primary{background:#1a3a8a;border-color:#3154a5}
-.toolbar{display:flex;gap:12px;align-items:flex-end;margin:12px 0 20px;flex-wrap:wrap}label{font-size:15px;color:#cbd5e1;display:block}
-select,input,textarea{width:260px;padding:12px 14px;border-radius:14px;border:1px solid #2c3448;background:#0e1422;color:#e6e8ee;font-size:16px}
-select.wide{width:320px}.form{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.form .full{grid-column:1/-1}
-.footer{margin-top:32px;color:#97a3b6;font-size:13px;text-align:center}.gate{display:grid;gap:12px;place-items:center;padding:48px 16px}
-.tel{font-size:28px;display:block;margin:6px 0}.ltr{direction:ltr;unicode-bidi:bidi-override}
-@media (max-width:980px){.grid.timetable{grid-template-columns:repeat(2,1fr)}}
-@media (max-width:640px){.grid.timetable{grid-template-columns:1fr}}
-@media (max-width:540px){.container{padding:16px}h1{font-size:1.6rem}.toolbar{flex-direction:column;align-items:stretch}select,input,textarea,select.wide{width:100%}.cta{flex-direction:column;align-items:stretch}.btn.primary{width:100%;text-align:center}.card{min-height:180px}}
-</style>
-  <link rel="stylesheet" href="styles.css">
+    :root{color-scheme:dark}
+    body{margin:0;background:#0b0d12;color:#e6e8ee;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,"Noto Sans Hebrew","Rubik",sans-serif}
+    .wrap{max-width:1200px;margin:0 auto;padding:24px}
+    h1{margin:0 0 16px}
+    .card{background:#0f1420;border:1px solid #233048;border-radius:16px;padding:16px}
+    .gate{display:grid;gap:12px;place-items:center;height:55vh}
+    input,button{font-size:16px;border-radius:12px;border:1px solid #2a3550;background:#0e1422;color:#e6e8ee}
+    input{padding:12px 14px;min-width:280px}
+    button{padding:10px 16px;cursor:pointer}
+    .btn{background:#192e78;border-color:#2f46a0}
+    .btn.alt{background:#223046}
+    .btn.warn{background:#6b1d1d;border-color:#8b2a2a}
+    .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 0 12px}
+    table{width:100%;border-collapse:collapse;font-size:14px}
+    th,td{padding:10px;border-bottom:1px solid #223046;vertical-align:top}
+    th{color:#9fb1c9;text-align:right;white-space:nowrap}
+    .mono{font-family:ui-monospace,Consolas,"SFMono-Regular",monospace;font-size:12px}
+    .status{padding:2px 8px;border-radius:999px;border:1px solid #2a4778;display:inline-block}
+    .st-paid{background:#0f3c1d;border-color:#206a3a}
+    .st-pending{background:#242b3d;border-color:#344564}
+    .st-failed{background:#4a1720;border-color:#7a2736}
+    .row-actions{display:flex;gap:6px;flex-wrap:wrap}
+    .muted{color:#8ea0b8;font-size:12px}
+    .hidden{display:none}
+    .search{flex:1;min-width:220px}
+  </style>
 </head>
 <body>
-<div class="container" id="adminRoot"><div class="header"><div class="logo"><a href="index.html">מועדון השחמט — אדמין</a></div><div class="actions"><a href="index.html">חזרה</a></div></div><div id="gate" class="gate"><h2>התחברות לאדמין</h2><label>סיסמה
-<input id="pwd" type="password" placeholder="123456 (דמו)"></label><button id="unlockBtn" class="btn primary">כניסה</button><div id="gateMsg" class="subtle"></div></div><div id="adminContent" style="display:none;"><h1>רשימת נרשמים</h1><div class="card"><table id="adminTable" class="table"><thead><tr><th>תאריך</th><th>תלמיד/ה</th><th>חוג</th><th>אפשרות</th><th>טלפון</th><th>אימייל</th><th>סטטוס</th></tr></thead><tbody></tbody></table><div class="subtle" style="margin-top:8px;">הדגמה. בגרסה החיה יתווסף סינון לפי חוג וייצוא CSV.</div></div></div></div><script defer src="script.js"></script>
+  <div class="wrap">
+    <h1>אדמין — רישום חוגים</h1>
+
+    <div id="gate" class="gate">
+      <div class="card" style="padding:24px;min-width:340px;text-align:center">
+        <h2 style="margin:0 0 12px">התחברות לאדמין</h2>
+        <div class="muted" style="margin-bottom:8px">הכנס סיסמת אדמין</div>
+        <input id="adminPass" type="password" placeholder="לדוגמה: RishonChess#2025!">
+        <button class="btn" id="enterBtn">כניסה</button>
+        <div id="gateMsg" class="muted" style="margin-top:8px"></div>
+      </div>
+    </div>
+
+    <div id="content" class="hidden">
+      <div class="card">
+        <div class="toolbar">
+          <input id="q" class="search" placeholder="חפש לפי שם/טלפון/אימייל/כיתה/סטטוס...">
+          <button id="refreshBtn" class="btn alt">רענן</button>
+        </div>
+        <div class="muted" id="countLine" style="margin-bottom:8px"></div>
+        <div style="overflow:auto">
+          <table id="tbl">
+            <thead>
+              <tr>
+                <th>זיהוי</th>
+                <th>חוג</th>
+                <th>שם מלא</th>
+                <th>טלפון</th>
+                <th>אימייל</th>
+                <th>אופציה</th>
+                <th>סטטוס</th>
+                <th>אסמכתא</th>
+                <th>נוצר</th>
+                <th>פעולות</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+(function(){
+  const state = {
+    key: '',        // יישמר כאן ה-ADMIN_KEY שהמשתמש הקליד
+    data: [],       // נתוני הרשמות מהשרת
+    filtered: []
+  };
+
+  const el = s => document.querySelector(s);
+  const tbody = () => el('#tbl tbody');
+
+  function shortId(id){ return (id||'').slice(0,8)+'…'; }
+  function fmtDate(iso){
+    try { const d = new Date(iso); return d.toLocaleString('he-IL'); } catch(e){ return iso||''; }
+  }
+  function badge(st){
+    const cls = st === 'paid' ? 'st-paid' : st === 'failed' || st === 'canceled' ? 'st-failed' : 'st-pending';
+    const txt = st || 'pending';
+    return `<span class="status ${cls}">${txt}</span>`;
+  }
+
+  async function fetchEnrollments(){
+    const r = await fetch('/api/admin/enrollments', {
+      headers: { 'X-Admin-Key': state.key }
+    });
+    if (!r.ok) throw new Error('unauthorized');
+    return r.json();
+  }
+
+  async function setStatus(id, status){
+    const r = await fetch(`/api/admin/enrollments/${encodeURIComponent(id)}/status`, {
+      method: 'POST',
+      headers: {
+        'Content-Type':'application/json',
+        'X-Admin-Key': state.key
+      },
+      body: JSON.stringify({ status })
+    });
+    if (!r.ok) throw new Error('failed to update');
+    return r.json();
+  }
+
+  function applyFilter(){
+    const q = (el('#q').value||'').trim().toLowerCase();
+    state.filtered = !q ? state.data : state.data.filter(row => {
+      return [
+        row.full_name, row.phone, row.email, row.class_name, row.payment_status, row.selected_option, row.payment_ref
+      ].filter(Boolean).some(v => String(v).toLowerCase().includes(q));
+    });
+    renderTable();
+  }
+
+  function renderTable(){
+    const rows = state.filtered.map(row => {
+      return `<tr>
+        <td class="mono" title="${row.id}">${shortId(row.id)}</td>
+        <td>${row.class_name || ''}</td>
+        <td>${row.full_name || ''}</td>
+        <td class="mono">${row.phone || ''}</td>
+        <td class="mono">${row.email || ''}</td>
+        <td>${row.selected_option || ''}</td>
+        <td>${badge(row.payment_status)}</td>
+        <td class="mono">${row.payment_ref || ''}</td>
+        <td class="mono">${fmtDate(row.created_at)}</td>
+        <td class="row-actions">
+          <button class="btn" data-act="paid" data-id="${row.id}">שולם</button>
+          <button class="btn alt" data-act="pending" data-id="${row.id}">ממתין</button>
+          <button class="btn warn" data-act="failed" data-id="${row.id}">נכשל</button>
+          <button class="btn alt" data-act="copy" data-id="${row.id}">העתק ID</button>
+        </td>
+      </tr>`;
+    }).join('');
+    tbody().innerHTML = rows || `<tr><td colspan="10" class="muted">אין נתונים</td></tr>`;
+    el('#countLine').textContent = `סה״כ: ${state.data.length} | מוצגים: ${state.filtered.length}`;
+  }
+
+  async function refresh(){
+    try{
+      const data = await fetchEnrollments();
+      state.data = data;
+      state.filtered = data;
+      renderTable();
+    }catch(e){
+      alert('שגיאה בטעינה. בדוק סיסמת אדמין/הרשאות.');
+      console.error(e);
+    }
+  }
+
+  // פעולות בטבלה
+  document.addEventListener('click', async (ev) => {
+    const btn = ev.target.closest('button[data-act]');
+    if (!btn) return;
+    const id = btn.dataset.id;
+    const act = btn.dataset.act;
+
+    if (act === 'copy'){
+      try { await navigator.clipboard.writeText(id); } catch(e){}
+      return;
+    }
+    if (act === 'paid' || act === 'pending' || act === 'failed'){
+      try{
+        await setStatus(id, act === 'failed' ? 'failed' : act);
+        await refresh();
+      }catch(e){ alert('עדכון סטטוס נכשל'); console.error(e); }
+    }
+  });
+
+  // שער כניסה
+  el('#enterBtn').addEventListener('click', async () => {
+    const pass = (el('#adminPass').value || '').trim();
+    if (!pass) return;
+    state.key = pass; // זה חייב להתאים ל-ADMIN_KEY בשרת
+    // נסה טעינה; אם מצליח — פתח את האדמין
+    try{
+      await refresh();
+      el('#gate').classList.add('hidden');
+      el('#content').classList.remove('hidden');
+    }catch(e){
+      el('#gateMsg').textContent = 'סיסמה שגויה או שאין הרשאה.';
+    }
+  });
+
+  el('#refreshBtn').addEventListener('click', refresh);
+  el('#q').addEventListener('input', applyFilter);
+})();
+</script>
 </body>
 </html>
