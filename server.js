@@ -93,17 +93,31 @@ app.get('/api/admin/enrollments', auth, async (_req, res) => {
   res.json(r.rows);
 });
 
-// (אופציונלי בהמשך: סימון ידני כשולם)
-// app.post('/api/admin/mark-paid', auth, async (req, res) => {
-//   const { id } = req.body || {};
-//   if (!id) return res.status(400).json({ error: 'missing id' });
-//   await pool.query(
-//     `UPDATE enrollments SET payment_status='paid', payment_ref='Manual' WHERE id=$1`,
-//     [id]
-//   );
-//   res.json({ ok: true });
-// });
+// ---------- Admin: סימון תשלום ידני (עד שיהיה API) ----------
+app.post('/api/admin/mark-paid', auth, async (req, res) => {
+  const { id, ref } = req.body || {};
+  if (!id) return res.status(400).json({ error: 'missing id' });
+  await pool.query(
+    `UPDATE enrollments
+     SET payment_status='paid', payment_ref=COALESCE($2,'Manual')
+     WHERE id=$1`,
+    [id, ref || null]
+  );
+  res.json({ ok: true });
+});
+
+// (כללי יותר – עדכון סטטוס כלשהו: 'pending' | 'paid' | 'failed')
+app.post('/api/admin/mark-status', auth, async (req, res) => {
+  const { id, status, ref } = req.body || {};
+  if (!id || !status) return res.status(400).json({ error: 'missing id/status' });
+  await pool.query(
+    `UPDATE enrollments
+     SET payment_status=$2, payment_ref=COALESCE($3, payment_ref)
+     WHERE id=$1`,
+    [id, status, ref || null]
+  );
+  res.json({ ok: true });
+});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log('listening on', PORT));
-
