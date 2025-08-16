@@ -16,9 +16,14 @@ app.use(bodyParser.json());
 
 const useSsl = !process.env.DATABASE_URL?.includes('localhost');
 const { Pool } = pg;
+
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false }   // <<< מונע את שגיאת self-signed
+  host: process.env.PGHOST,
+  port: Number(process.env.PGPORT || 6543),
+  database: process.env.PGDATABASE,
+  user: process.env.PGUSER,
+  password: process.env.PGPASSWORD,
+  ssl: { rejectUnauthorized: false } // עוקף self-signed
 });
 const JWT_SECRET = process.env.JWT_SECRET || crypto.randomBytes(32).toString('hex');
 
