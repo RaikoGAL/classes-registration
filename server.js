@@ -14,6 +14,7 @@ app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
+const useSsl = !process.env.DATABASE_URL?.includes('localhost');
 const { Pool } = pg;
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
