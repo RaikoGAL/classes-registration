@@ -4,50 +4,59 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>אדמין — רישום חוגים</title>
+
+  <!-- מינימום סטייל; ה-Light והפוליש באים מ-styles.css -->
   <style>
-    :root{color-scheme:dark}
-    body{margin:0;background:#0b0d12;color:#e6e8ee;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,"Noto Sans Hebrew","Rubik",sans-serif}
+    body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,"Noto Sans Hebrew","Rubik",sans-serif}
     .wrap{max-width:1200px;margin:0 auto;padding:24px}
-    h1{margin:0 0 16px}
-    .card{background:#0f1420;border:1px solid #233048;border-radius:16px;padding:16px}
+    .card{border-radius:16px;padding:16px}
     .gate{display:grid;gap:12px;place-items:center;height:55vh}
-    input,button{font-size:16px;border-radius:12px;border:1px solid #2a3550;background:#0e1422;color:#e6e8ee}
-    input{padding:12px 14px;min-width:280px}
-    button{padding:10px 16px;cursor:pointer}
-    .btn{background:#192e78;border-color:#2f46a0}
-    .btn.alt{background:#223046}
-    .btn.warn{background:#6b1d1d;border-color:#8b2a2a}
+    input,button{font-size:16px;border-radius:12px}
+    input{padding:12px 14px;min-width:280px;border:1px solid #e2e8f0;background:#fff;color:#0f172a}
+    button{padding:10px 16px;cursor:pointer;border:1px solid #e2e8f0;background:#fff;color:#0f172a}
+    .btn{background:#2563eb;color:#fff;border-color:#1e40af}
+    .btn.alt{background:#f8fafc;color:#0f172a}
+    .btn.warn{background:#b91c1c;border-color:#7f1d1d;color:#fff}
     .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 0 12px}
-    table{width:100%;border-collapse:collapse;font-size:14px}
-    th,td{padding:10px;border-bottom:1px solid #223046;vertical-align:top}
-    th{color:#9fb1c9;text-align:right;white-space:nowrap}
-    .mono{font-family:ui-monospace,Consolas,"SFMono-Regular",monospace;font-size:12px}
-    .status{padding:2px 8px;border-radius:999px;border:1px solid #2a4778;display:inline-block}
-    .st-paid{background:#0f3c1d;border-color:#206a3a}
-    .st-pending{background:#242b3d;border-color:#344564}
-    .st-failed{background:#4a1720;border-color:#7a2736}
+    .search{flex:1;min-width:220px;padding:10px 12px;border-radius:12px;border:1px solid #e2e8f0}
+    table{width:100%;border-collapse:collapse;font-size:14px;background:#fff;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden}
+    th,td{padding:10px;border-bottom:1px solid #e2e8f0;vertical-align:top}
+    thead th{background:#f8fafc;color:#1f2937;text-align:right;white-space:nowrap}
+    .status{padding:2px 8px;border-radius:999px;border:1px solid #cbd5e1;display:inline-block}
+    .st-paid{background:#ecfdf5;border-color:#10b981;color:#065f46}
+    .st-pending{background:#eff6ff;border-color:#93c5fd;color:#1e3a8a}
+    .st-failed{background:#fef2f2;border-color:#fecaca;color:#991b1b}
     .row-actions{display:flex;gap:6px;flex-wrap:wrap}
-    .muted{color:#8ea0b8;font-size:12px}
+    .muted{color:#64748b;font-size:12px}
     .hidden{display:none}
-    .search{flex:1;min-width:220px}
+    .admin-wrap{background:#fff;border:1px solid #e2e8f0;border-radius:16px;box-shadow:0 10px 30px rgba(15,23,42,.06);padding:16px}
   </style>
+
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body class="light">
   <div class="wrap">
+    <div class="header" style="background:none;border:none;padding:0;margin-bottom:10px">
+      <div class="logo"><a href="index.html">מועדון השחמט ראשון לציון</a></div>
+      <div class="actions"><a href="index.html" class="back-btn" aria-label="חזרה">← חזרה</a></div>
+    </div>
+
     <h1>אדמין — רישום חוגים</h1>
-<p><a href="index.html" class="back-btn" aria-label="חזרה">← חזרה</a></p>
+
+    <!-- שער כניסה -->
     <div id="gate" class="gate">
-      <div class="card" style="padding:24px;min-width:340px;text-align:center">
+      <div class="admin-wrap" style="padding:24px;min-width:340px;text-align:center">
         <h2 style="margin:0 0 12px">התחברות לאדמין</h2>
         <div class="muted" style="margin-bottom:8px">הכנס סיסמת אדמין</div>
-        <input id="adminPass" type="password" placeholder="לדוגמה: RishonChess#2025!">
+        <input id="adminPass" type="password" placeholder="הכנס סיסמת אדמין">
         <button class="btn" id="enterBtn">כניסה</button>
         <div id="gateMsg" class="muted" style="margin-top:8px"></div>
       </div>
     </div>
 
+    <!-- תוכן אדמין -->
     <div id="content" class="hidden">
-      <div class="card">
+      <div class="admin-wrap">
         <div class="toolbar">
           <input id="q" class="search" placeholder="חפש לפי שם/טלפון/אימייל/כיתה/סטטוס...">
           <button id="refreshBtn" class="btn alt">רענן</button>
@@ -57,14 +66,10 @@
           <table id="tbl">
             <thead>
               <tr>
-                <th>זיהוי</th>
                 <th>חוג</th>
                 <th>שם מלא</th>
-                <th>טלפון</th>
-                <th>אימייל</th>
                 <th>אופציה</th>
                 <th>סטטוס</th>
-                <th>אסמכתא</th>
                 <th>נוצר</th>
                 <th>פעולות</th>
               </tr>
@@ -79,23 +84,30 @@
 <script>
 (function(){
   const state = {
-    key: '',        // יישמר כאן ה-ADMIN_KEY שהמשתמש הקליד
-    data: [],       // נתוני הרשמות מהשרת
+    key: '',        // ה-ADMIN_KEY שהמשתמש הקליד
+    data: [],
     filtered: []
   };
 
   const el = s => document.querySelector(s);
   const tbody = () => el('#tbl tbody');
 
-  function shortId(id){ return (id||'').slice(0,8)+'…'; }
   function fmtDate(iso){
     try { const d = new Date(iso); return d.toLocaleString('he-IL'); } catch(e){ return iso||''; }
   }
   function badge(st){
-    const cls = st === 'paid' ? 'st-paid' : st === 'failed' || st === 'canceled' ? 'st-failed' : 'st-pending';
+    const cls = st === 'paid' ? 'st-paid' : (st === 'failed' || st === 'canceled') ? 'st-failed' : 'st-pending';
     const txt = st || 'pending';
     return `<span class="status ${cls}">${txt}</span>`;
   }
+  const mapOpt = v => {
+    const t = String(v||'').toLowerCase();
+    if (t==='both') return 'שני הימים';
+    if (t==='single') return 'יום אחד';
+    if (t==='day1') return 'יום שני';
+    if (t==='day2') return 'יום רביעי';
+    return v || '';
+  };
 
   async function fetchEnrollments(){
     const r = await fetch('/api/admin/enrollments', {
@@ -108,10 +120,7 @@
   async function setStatus(id, status){
     const r = await fetch(`/api/admin/enrollments/${encodeURIComponent(id)}/status`, {
       method: 'POST',
-      headers: {
-        'Content-Type':'application/json',
-        'X-Admin-Key': state.key
-      },
+      headers: {'Content-Type':'application/json','X-Admin-Key': state.key},
       body: JSON.stringify({ status })
     });
     if (!r.ok) throw new Error('failed to update');
@@ -122,7 +131,7 @@
     const q = (el('#q').value||'').trim().toLowerCase();
     state.filtered = !q ? state.data : state.data.filter(row => {
       return [
-        row.full_name, row.phone, row.email, row.class_name, row.payment_status, row.selected_option, row.payment_ref
+        row.class_name, row.full_name, row.phone, row.email, row.payment_status, mapOpt(row.selected_option)
       ].filter(Boolean).some(v => String(v).toLowerCase().includes(q));
     });
     renderTable();
@@ -131,24 +140,19 @@
   function renderTable(){
     const rows = state.filtered.map(row => {
       return `<tr>
-        <td class="mono" title="${row.id}">${shortId(row.id)}</td>
         <td>${row.class_name || ''}</td>
         <td>${row.full_name || ''}</td>
-        <td class="mono">${row.phone || ''}</td>
-        <td class="mono">${row.email || ''}</td>
-        <td>${row.selected_option || ''}</td>
+        <td>${mapOpt(row.selected_option)}</td>
         <td>${badge(row.payment_status)}</td>
-        <td class="mono">${row.payment_ref || ''}</td>
-        <td class="mono">${fmtDate(row.created_at)}</td>
+        <td>${fmtDate(row.created_at)}</td>
         <td class="row-actions">
           <button class="btn" data-act="paid" data-id="${row.id}">שולם</button>
           <button class="btn alt" data-act="pending" data-id="${row.id}">ממתין</button>
           <button class="btn warn" data-act="failed" data-id="${row.id}">נכשל</button>
-          <button class="btn alt" data-act="copy" data-id="${row.id}">העתק ID</button>
         </td>
       </tr>`;
     }).join('');
-    tbody().innerHTML = rows || `<tr><td colspan="10" class="muted">אין נתונים</td></tr>`;
+    tbody().innerHTML = rows || `<tr><td colspan="6" class="muted">אין נתונים</td></tr>`;
     el('#countLine').textContent = `סה״כ: ${state.data.length} | מוצגים: ${state.filtered.length}`;
   }
 
@@ -159,7 +163,7 @@
       state.filtered = data;
       renderTable();
     }catch(e){
-      alert('שגיאה בטעינה. בדוק סיסמת אדמין/הרשאות.');
+      el('#gateMsg').textContent = 'שגיאה בטעינה. בדוק סיסמה/הרשאות.';
       console.error(e);
     }
   }
@@ -170,11 +174,6 @@
     if (!btn) return;
     const id = btn.dataset.id;
     const act = btn.dataset.act;
-
-    if (act === 'copy'){
-      try { await navigator.clipboard.writeText(id); } catch(e){}
-      return;
-    }
     if (act === 'paid' || act === 'pending' || act === 'failed'){
       try{
         await setStatus(id, act === 'failed' ? 'failed' : act);
@@ -187,8 +186,7 @@
   el('#enterBtn').addEventListener('click', async () => {
     const pass = (el('#adminPass').value || '').trim();
     if (!pass) return;
-    state.key = pass; // זה חייב להתאים ל-ADMIN_KEY בשרת
-    // נסה טעינה; אם מצליח — פתח את האדמין
+    state.key = pass;
     try{
       await refresh();
       el('#gate').classList.add('hidden');
