@@ -192,5 +192,28 @@ select.wide{width:320px}.form{display:grid;grid-template-columns:repeat(2,1fr);g
     else enhance();
   })();
   </script>
+<script>
+(function(){
+  function normalize(card){
+    const kv = card.querySelector('.kv'); if(!kv) return;
+    // הפוך כל ילד ל"תגית" חזותית – CSS כבר עושה את הסטייל
+    kv.querySelectorAll('*').forEach(ch=>{
+      ch.classList.remove('badge'); // נטרול סגנון ישן
+    });
+  }
+  function enhance(){
+    const grid = document.getElementById('grid') || document.querySelector('.grid.timetable');
+    if(!grid) return;
+    grid.querySelectorAll('.card').forEach(normalize);
+    new MutationObserver(m=>m.forEach(x=>x.addedNodes.forEach(n=>{
+      if(n.nodeType===1 && n.classList?.contains('card')) normalize(n);
+      n.querySelectorAll?.('.card')?.forEach(normalize);
+    }))).observe(grid,{childList:true,subtree:true});
+  }
+  document.readyState==='loading' ? document.addEventListener('DOMContentLoaded',enhance) : enhance();
+})();
+</script>
+
+
 </body>
 </html>
