@@ -27,7 +27,11 @@ select.wide{width:320px}.form{display:grid;grid-template-columns:repeat(2,1fr);g
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<div class="container"><div class="header"><div class="logo"><a href="index.html">מועדון השחמט ראשון לציון</a></div><div class="actions"><a href="admin.html">אדמין</a></div></div><h1 id="classTitle">שם החוג</h1><div id="classMeta" class="subtle">רמה • מאמן/ת</div><div class="card" style="margin-top:14px;"><div class="kv"><div><span>מחיר:</span> <strong id="price">₪195</strong></div></div><div><label>בחירת ימי מפגש
+<div class="container"><div class="header"><div class="logo">
+<div class="actions">
+  <a href="index.html" class="back-btn" aria-label="חזרה">← חזרה</a>
+</div>
+<a href="index.html">מועדון השחמט ראשון לציון</a></div><div class="actions"><a href="admin.html">אדמין</a></div></div><h1 id="classTitle">שם החוג</h1><div id="classMeta" class="subtle">רמה • מאמן/ת</div><div class="card" style="margin-top:14px;"><div class="kv"><div><span>מחיר:</span> <strong id="price">₪195</strong></div></div><div><label>בחירת ימי מפגש
 <select id="meetingOption">
   <option value="single" selected>תשלום רגיל / מפגש יחיד</option>
   <option value="day1">מפגש 1</option>
@@ -45,7 +49,7 @@ select.wide{width:320px}.form{display:grid;grid-template-columns:repeat(2,1fr);g
   מעבר לתשלום
 </button>
 
-</div></form></div><div class="footer">בגרסה זו ההפניה היא ישירות ל‑Meshulam לקישור המתאים.</div></div>
+</div></form></div><div class="footer">ההפניה היא ישירות ל‑Meshulam לקישור המתאים.</div></div>
 <!-- היה: <script defer src="script.js"></script> -->
 <script src="script.js"></script>
 
@@ -63,6 +67,21 @@ select.wide{width:320px}.form{display:grid;grid-template-columns:repeat(2,1fr);g
 </script>
 
 <script src="payments.js"></script>
+<script>
+(function(){
+  const container = document.querySelector('.container');
+  if (container && !document.getElementById('contactNotice')) {
+    const header = container.querySelector('.header');
+    const div = document.createElement('div');
+    div.id = 'contactNotice';
+    div.className = 'notice';
+    div.innerHTML = 'עדיף לפנות בהודעת ווטסאפ או במייל <a href="mailto:rishonchess@gmail.com">rishonchess@gmail.com</a>';
+    (header && header.nextSibling)
+      ? header.parentNode.insertBefore(div, header.nextSibling)
+      : container.prepend(div);
+  }
+})();
+</script>
 
 </body>
 </html>
