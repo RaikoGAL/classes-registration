@@ -223,3 +223,89 @@ body.light .footer{ color: #64748b; }
 
 /* קישורים */
 body.light a{ color: var(--primary); }
+
+/* ===== UI Polish 2025-08-18 ===== */
+:root{
+  --bg:#f6f8fc; --surface:#fff; --text:#0f172a; --muted:#334155;
+  --border:#e2e8f0; --tag-bg:#f5f8ff; --tag-border:#cbd5e1; --tag-text:#334155;
+  --dashed:#cbd5e1; --primary:#2563eb; --primary-700:#1e40af;
+  --shadow:0 10px 30px rgba(15,23,42,.06);
+}
+
+/* Light mode on every page */
+body.light{ background:var(--bg)!important; color:var(--text)!important; font-size:18px; }
+body.light a{ color:var(--primary); }
+body.light .container{ max-width:1320px!important; }
+body.light .header{
+  background:rgba(255,255,255,.9); border:1px solid var(--border);
+  border-radius:14px; padding:10px 14px; backdrop-filter:saturate(1.1) blur(6px);
+}
+body.light .logo{ font-weight:800; font-size:18px; color:var(--primary); letter-spacing:.2px; }
+
+/* Cards */
+body.light .grid.timetable{ grid-template-columns:repeat(3,minmax(360px,1fr))!important; gap:18px!important; }
+body.light .card{
+  background:var(--surface)!important; border:1px solid var(--border)!important;
+  border-radius:18px!important; box-shadow:var(--shadow); padding:20px!important; min-height:240px!important;
+}
+body.light h1{ font-size:clamp(30px,4vw,42px); margin:22px 0 8px; }
+body.light h2{ font-size:clamp(22px,3vw,28px); }
+body.light h3{ font-size:clamp(18px,2.4vw,24px); }
+body.light .subtle{ color:#64748b; }
+
+/* === FIX: מלבנים אחידים (מאמן/רמה) בלי מילוי כחול === */
+body.light .kv{ display:flex; flex-wrap:wrap; gap:10px 10px; font-size:0; } /* reset */
+body.light .kv > *,                 /* כל ילד */
+body.light .kv .badge{              /* וגם אם יש class=badge הישן */
+  display:inline-flex!important; align-items:center!important; gap:6px!important;
+  padding:8px 12px!important; border-radius:9999px!important;
+  background:var(--tag-bg)!important; border:1px solid var(--tag-border)!important;
+  color:var(--tag-text)!important; font-size:16px!important; line-height:1!important;
+  box-shadow:none!important; text-shadow:none!important;
+}
+/* הסרת עיטורים פנימיים שהגיעו מהסגנון הישן */
+body.light .kv > *::before, body.light .kv > *::after{ display:none!important; }
+
+/* תגים מתחת לכותרת (שעות) – dashed */
+body.light .sessions > *{
+  background:var(--surface)!important; border:1px dashed var(--dashed)!important; color:#475569!important;
+  padding:8px 12px!important; border-radius:9999px!important; font-size:16px!important;
+}
+
+/* CTA / מחיר */
+body.light .cta{ align-items:center; }
+body.light .price{ color:#475569!important; font-weight:600; }
+
+/* כפתורים ושדות */
+body.light .btn{
+  font-size:18px; padding:12px 16px; border-radius:14px;
+  border:1px solid var(--border); background:var(--surface); color:var(--text);
+}
+body.light .btn.primary{ background:var(--primary)!important; border-color:var(--primary-700)!important; color:#fff!important; }
+
+/* REGISTER: שיפור אליינמנט וקונטרסט */
+body.light.page-register .form{ grid-template-columns:1fr 1fr!important; gap:16px 24px!important; align-items:start; }
+body.light.page-register .form > *{ justify-self:stretch; }
+body.light.page-register label{ color:var(--muted); font-weight:600; }
+body.light.page-register input,
+body.light.page-register select,
+body.light.page-register textarea{
+  width:100%!important; box-sizing:border-box!important;
+  background:var(--surface); color:var(--text); border:1px solid var(--border); border-radius:12px; font-size:18px; padding:12px 14px!important;
+}
+/* הסלקט של ימי המפגש שלא יתפרס לכל הרוחב */
+#meetingOption{ width:auto!important; min-width:340px; }
+
+/* בר תשלום ליד הכפתור */
+.paybar{ display:flex; gap:12px; align-items:center; justify-content:flex-end; margin-top:8px; color:var(--text); font-weight:700; }
+.paybar .amount{ padding:6px 10px; border-radius:999px; background:var(--tag-bg); border:1px solid var(--tag-border); }
+
+/* BACK button תואם */
+.back-btn{ display:inline-flex; gap:8px; align-items:center; padding:8px 12px; border-radius:12px;
+  border:1px solid var(--border); background:var(--surface); color:var(--text); text-decoration:none; }
+.back-btn:hover{ filter:brightness(.95); }
+
+/* ADMIN: טבלאות בהירות + כפתור חזרה */
+body.light .admin-wrap{ background:var(--surface); border:1px solid var(--border); border-radius:16px; box-shadow:var(--shadow); }
+body.light table{ color:var(--text); }
+body.light thead th{ color:#1f2937; }
