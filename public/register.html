@@ -5,23 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>טופס הרשמה לחוג</title>
 
-  <!-- הסטייל הישן נשאר, אבל light-mode והפוליש ב-styles.css גוברים עליו -->
+  <!-- ה-css ההיסטורי נשאר; ה-Light והפוליש בקובץ styles.css גוברים -->
   <style>
     html{direction:rtl}*{box-sizing:border-box}body{margin:0;padding:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,"Noto Sans Hebrew","Rubik",sans-serif;background:#0b0d12;color:#e6e8ee}
-    a{color:#a4c2ff;text-decoration:none}.container{max-width:1200px;margin:0 auto;padding:24px}
-    .header{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}.logo{font-weight:800;letter-spacing:.3px}
-    .header .actions{display:flex;gap:10px;flex-wrap:wrap}.header .actions a,.btn{display:inline-block;padding:12px 18px;border-radius:14px;border:1px solid #2a3246;background:#121826;color:#e6e8ee;transition:all .2s;font-size:16px}
-    h1,h2,h3{margin:16px 0 8px}.subtle{color:#9aa4b2;font-size:14px}
-    .card{background:linear-gradient(180deg,#0f1422,#0b0f1a);border:1px solid #253048;border-radius:18px;padding:16px;display:flex;flex-direction:column;min-height:220px}
-    .kv{display:flex;flex-wrap:wrap;gap:8px 10px;font-size:14px;color:#cbd5e1}
+    .container{max-width:1200px;margin:0 auto;padding:24px}
+    .header{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+    .logo{font-weight:800;letter-spacing:.3px}
+    .actions a,.btn{display:inline-block;padding:12px 18px;border-radius:14px;border:1px solid #2a3246;background:#121826;color:#e6e8ee;transition:all .2s;font-size:16px}
+    h1,h2,h3{margin:16px 0 8px}
+    .card{background:linear-gradient(180deg,#0f1422,#0b0f1a);border:1px solid #253048;border-radius:18px;padding:16px;display:flex;flex-direction:column}
     .sessions{margin:8px 0;display:flex;flex-wrap:wrap;gap:6px}
-    .session{font-size:12px;padding:4px 8px;border-radius:999px;background:#132236;border:1px dashed #2a4778}
-    .cta{margin-top:auto;display:flex;justify-content:space-between;align-items:center;gap:12px}.price{font-size:14px;color:#cbd5e1}.btn.primary{background:#1a3a8a;border-color:#3154a5}
-    .toolbar{display:flex;gap:12px;align-items:flex-end;margin:12px 0 20px;flex-wrap:wrap}label{font-size:15px;color:#cbd5e1;display:block}
-    select,input,textarea{width:260px;padding:12px 14px;border-radius:14px;border:1px solid #2c3448;background:#0e1422;color:#e6e8ee;font-size:16px}
     .form{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.form .full{grid-column:1/-1}
-    .footer{margin-top:32px;color:#97a3b6;font-size:13px;text-align:center}
-    @media (max-width:540px){.container{padding:16px}h1{font-size:1.6rem}.form{grid-template-columns:1fr}.btn.primary{width:100%;text-align:center}.card{min-height:180px}}
+    .footer{margin-top:32px;text-align:center}
+    @media (max-width:540px){.container{padding:16px}.form{grid-template-columns:1fr}.btn.primary{width:100%}.card{min-height:180px}}
   </style>
 
   <link rel="stylesheet" href="styles.css">
@@ -30,28 +26,19 @@
   <div class="container">
     <div class="header">
       <div class="logo"><a href="index.html">מועדון השחמט ראשון לציון</a></div>
-      <div class="actions">
-        <!-- כפתור חזרה במקום "אדמין" -->
-        <a href="index.html" class="back-btn" aria-label="חזרה">← חזרה</a>
-      </div>
+      <div class="actions"><a href="index.html" class="back-btn" aria-label="חזרה">חזרה</a></div>
     </div>
 
     <h1 id="classTitle">שם החוג</h1>
     <div id="classMeta" class="subtle">רמה • מאמן/ת</div>
 
     <div class="card" style="margin-top:14px;">
-      <div class="kv">
-        <div><span>מחיר:</span> <strong id="price">₪195</strong></div>
-      </div>
-
       <div>
         <label>בחירת ימי מפגש
           <select id="meetingOption">
-            <!-- ברירת המחדל נעדכן דינמית לפי מספר המפגשים בפועל -->
-            <option value="single">תשלום רגיל / מפגש יחיד</option>
-            <option value="day1">מפגש 1</option>
-            <option value="day2">מפגש 2</option>
             <option value="both">שני המפגשים (שני+רביעי)</option>
+            <option value="day1">יום שני</option>
+            <option value="day2">יום רביעי</option>
           </select>
         </label>
         <div id="sessionsList" class="sessions"></div>
@@ -68,14 +55,9 @@
         <div><label>אימייל<input id="email" type="email"></label></div>
         <div class="full"><label>הערות<textarea id="notes" rows="3" placeholder="מידע רפואי/בקשות"></textarea></label></div>
 
-        <!-- סרגל סכום ליד הכפתור -->
-        <div class="full">
-          <div class="paybar" id="paybar" aria-live="polite" style="display:none">
-            <span>סכום לתשלום:</span> <span class="amount" id="paybarAmount"></span>
-          </div>
-        </div>
-
-        <div class="full">
+        <!-- סכום + כפתור באותה שורה בצד שמאל -->
+        <div class="full payrow">
+          <div><span>סכום לתשלום:</span> <span class="amount" id="paybarAmount">₪0</span></div>
           <button type="button" class="btn primary pay-now" onclick="return saveThenPay(event)">מעבר לתשלום</button>
         </div>
       </form>
@@ -84,68 +66,44 @@
     <div class="footer">ההפניה היא ישירות ל-Meshulam לקישור המתאים.</div>
   </div>
 
-  <!-- טעינת הנתונים/תצוגה המקורית -->
   <script src="script.js"></script>
   <script src="payments.js"></script>
 
-  <!-- שמירת groupId מה-URL -->
+  <!-- קבלת groupId מה-URL -->
   <script>
     (function () {
       var sp = new URL(location.href).searchParams;
       var g = sp.get('group') || sp.get('groupId') || '';
-      if (g) {
-        window.CURRENT_GROUP = g;
-        document.body.dataset.group = g;
-        var h = document.getElementById('groupKey');
-        if (h) h.value = g;
-      }
+      if (g) { document.body.dataset.group = g; var h=document.getElementById('groupKey'); if(h) h.value=g; }
     })();
   </script>
 
-  <!-- לוגיקת בחירת ברירת-מחדל (שני הימים כשאפשר) + עדכון מחיר + הצגת סכום ליד הכפתור -->
+  <!-- ברירת מחדל: שני המפגשים אם קיימים 2; עדכון סכום; ריענון אם חוזרים עם back -->
   <script>
     (function(){
-      const PRICE_ONE  = 235;
-      const PRICE_BOTH = 355;
+      const PRICE_ONE  = 235, PRICE_BOTH = 355;
+      const sel = document.getElementById('meetingOption');
+      const pay = document.getElementById('paybarAmount');
+      const sessionsBox = document.getElementById('sessionsList');
 
-      const sel          = document.getElementById('meetingOption');
-      const priceTop     = document.getElementById('price');
-      const paybar       = document.getElementById('paybar');
-      const paybarAmount = document.getElementById('paybarAmount');
-      const sessionsBox  = document.getElementById('sessionsList');
+      function amountFor(v){ return v==='both' ? PRICE_BOTH : PRICE_ONE; }
+      function update(){ if (sel && pay){ pay.textContent = '₪' + amountFor(sel.value); } }
 
-      function calcAmount(v){ return v === 'both' ? PRICE_BOTH : PRICE_ONE; }
-
-      function updateAmounts(){
-        if (!sel) return;
-        const amount = calcAmount(sel.value);
-        if (priceTop)     priceTop.textContent     = '₪' + amount;
-        if (paybarAmount) paybarAmount.textContent = '₪' + amount;
-        if (paybar)       paybar.style.display     = 'flex';
+      function chooseDefault(){
+        const cnt = sessionsBox ? sessionsBox.querySelectorAll('.session').length : 0;
+        sel.value = (cnt >= 2) ? 'both' : 'day1';
+        update();
       }
 
-      // בחר "שני הימים" כברירת מחדל רק אם יש לפחות שני מפגשים בפועל
-      function chooseDefaultBySessions(){
-        try{
-          const cnt = sessionsBox ? sessionsBox.querySelectorAll('.session').length : 0;
-          if (cnt >= 2) {
-            sel.value = 'both';
-          } else {
-            sel.value = 'single';
-          }
-        }catch(e){}
-        updateAmounts();
-      }
+      // אם חוזרים אחורה (BFCache) – נטען מחדש כדי למנוע כפילויות
+      window.addEventListener('pageshow', e => { if (e.persisted) location.reload(); });
 
-      // הפעלה ראשונית
-      if (sel) {
-        // אם script.js יטעין את המפגשים מאוחר יותר — נעקוב ונעדכן
-        const mo = new MutationObserver(chooseDefaultBySessions);
+      if (sel){
+        // עדכון כש- script.js מוסיף את המפגשים דינמית
+        const mo = new MutationObserver(chooseDefault);
         if (sessionsBox) mo.observe(sessionsBox,{childList:true,subtree:true});
-        // ניסיון ראשוני (אם המפגשים כבר ב-DOM)
-        chooseDefaultBySessions();
-        // האזנה לשינוי ידני
-        sel.addEventListener('change', updateAmounts);
+        chooseDefault();
+        sel.addEventListener('change', update);
       }
     })();
   </script>
