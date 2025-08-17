@@ -4,6 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>מערכת חוגים — ראשון לציון</title>
+
+  <!-- ה-CSS המקורי מהפרויקט (כהה) נשאר ככה, אבל למטה הוספתי override ל-Light ולתגיות -->
   <style>
 html{direction:rtl}*{box-sizing:border-box}body{margin:0;padding:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,"Noto Sans Hebrew","Rubik",sans-serif;background:#0b0d12;color:#e6e8ee}
 a{color:#a4c2ff;text-decoration:none}.container{max-width:1200px;margin:0 auto;padding:24px}
@@ -23,156 +25,172 @@ select.wide{width:320px}.form{display:grid;grid-template-columns:repeat(2,1fr);g
 @media (max-width:980px){.grid.timetable{grid-template-columns:repeat(2,1fr)}}
 @media (max-width:640px){.grid.timetable{grid-template-columns:1fr}}
 @media (max-width:540px){.container{padding:16px}h1{font-size:1.6rem}.toolbar{flex-direction:column;align-items:stretch}select,input,textarea,select.wide{width:100%}.cta{flex-direction:column;align-items:stretch}.btn.primary{width:100%;text-align:center}.card{min-height:180px}}
-</style>
+  </style>
+
   <link rel="stylesheet" href="styles.css">
+
+  <!-- OVERRIDES: תגיות אחידות, קצת הגדלה, ומצב LIGHT -->
+  <style>
+    /* קצת “מילוי מסך” ואחידות */
+    .container{ max-width:1360px }
+    .grid.timetable{ grid-template-columns:repeat(3, minmax(360px,1fr)); gap:18px }
+    .card{ padding:20px; min-height:240px }
+    body{ font-size:18px }
+    h1{ font-size:clamp(30px,4vw,42px) } h2{ font-size:clamp(22px,3.2vw,30px) } h3{ font-size:clamp(18px,2.6vw,24px) }
+    .btn{ font-size:18px; padding:12px 16px }
+    select,input,textarea{ font-size:18px; padding:14px 16px }
+
+    /* כל התגיות למעלה (מאמן/רמה/מד-כושר) – גודל אחיד, קו רגיל */
+    .kv > *{
+      display:inline-flex; align-items:center; gap:6px;
+      padding:6px 10px; border-radius:999px;
+      border:1px solid rgba(164,194,255,.25);
+      background:rgba(19,34,54,.35);
+      color:#cfe1ff; font-size:16px; line-height:1;
+    }
+    /* למטה (שעות) נשאר dashed */
+    .sessions > *{ border-style:dashed !important; }
+
+    /* מצב בהיר — הפעלה ע"י <body class="light"> */
+    body.light{ background:#f8fafc; color:#0f172a }
+    body.light a{ color:#2563eb }
+    body.light .header{ background:rgba(255,255,255,.85); border-bottom:1px solid #e2e8f0 }
+    body.light .card{ background:#ffffff; border:1px solid #e2e8f0 }
+    body.light .kv > *{ background:#fff; border-color:#cbd5e1; color:#334155 }
+    body.light .sessions > *{ background:#fff; border-color:#cbd5e1; color:#334155; border-style:dashed !important }
+    body.light .btn.primary{ background:#1d4ed8; border-color:#1e40af; color:#fff }
+    body.light .footer{ color:#64748b }
+  </style>
 </head>
-<body class="page-register light">
-<div class="container"><div class="header"><div class="logo">מועדון השחמט ראשון לציון</div><div class="actions"><a href="admin.html">אדמין</a><a class="ghost" href="contact.html">צור קשר</a></div></div><h1>מערכת חוגים — הרשמה בלחיצה</h1><div class="subtle">בחרו יום/מאמן/רמה ולחצו על "להרשמה"</div><div class="toolbar"><label>יום
-<select id="daySelect" class="wide"><option value="all">כל הימים</option><option value="0">א'</option><option value="1">ב'</option><option value="2">ג'</option><option value="3">ד'</option><option value="4">ה'</option><option value="5">ו'</option><option value="6">ש'</option></select></label><label>רמה
-<select id="levelSelect" class="wide"><option value="all">כל הרמות</option><option value="גן–א׳">גן–א׳</option><option value="בנות">בנות</option><option value="1200">1200–1400</option><option value="1400">1400–1600</option><option value="1600">1600–1800</option><option value="מבוגרים">מבוגרים</option><option value="+1900">+1900</option></select></label><label>מאמן/ת
-<select id="coachSelect" class="wide"><option value="all">כל המאמנים</option></select></label></div><div id="grid" class="grid timetable"></div><div class="footer">© 2025 מועדון השחמט ראשון לציון — דמו ויזואלי לצורכי אפיון</div></div><script defer src="script.js"></script>
-<script>
-(function(){
-  // הודעת יצירת קשר אחרי ההדר
-  function insertNotice(){
-    const container = document.querySelector('.container');
-    if (!container || document.getElementById('contactNotice')) return;
-    const header = container.querySelector('.header');
-    const div = document.createElement('div');
-    div.id = 'contactNotice';
-    div.className = 'notice';
-    div.innerHTML = 'עדיף לפנות בהודעת ווטסאפ או במייל <a href="mailto:rishonchess@gmail.com">rishonchess@gmail.com</a>';
-    (header && header.nextSibling)
-      ? header.parentNode.insertBefore(div, header.nextSibling)
-      : container.prepend(div);
-  }
 
-  // שיפור כרטיס בודד: מחיר מפוצל + "מד כושר" בטווחים מספריים
-  function enhanceCard(card){
-    // 1) מחיר: "235/355" -> תגיות "מחיר ליום אחד" + "מחיר ליומיים"
-    const cta = card.querySelector('.cta');
-    if (cta && !cta.dataset.priceEnhanced){
-      const priceEl = Array.from(cta.children).find(el => /\d/.test(el.textContent || ''));
-      if (priceEl){
-        const raw = priceEl.textContent.trim();
-        const m = raw.match(/^(\d{2,5})\s*\/\s*(\d{2,5})$/);
-        if (m){
-          const [, one, two] = m;
-          priceEl.innerHTML = `<span class="price-lines">
-            <span class="price-tag">מחיר ליום אחד: ${one} ₪</span>
-            <span class="price-tag">מחיר ליומיים: ${two} ₪</span>
-          </span>`;
-          cta.dataset.priceEnhanced = '1';
-        }
-      }
-    }
-    // 2) הוספת "(מד כושר)" ליד טווחים כמו "1200-1400"
-    card.querySelectorAll('*').forEach(el=>{
-      if (el.children.length===0) {
-        const t = (el.textContent||'').trim();
-        if (/\b\d{3,4}\s*-\s*\d{3,4}\b/.test(t) && !/מד כושר/.test(t)) {
-          el.textContent = t + ' (מד כושר)';
-        }
-      }
-    });
-  }
+<!-- מפעיל מצב בהיר -->
+<body class="light">
+  <div class="container">
+    <div class="header">
+      <div class="logo">מועדון השחמט ראשון לציון</div>
+      <div class="actions">
+        <a href="admin.html">אדמין</a>
+        <a class="ghost" href="contact.html">צור קשר</a>
+      </div>
+    </div>
 
-  // הפעלה על כל הכרטיסים, גם כאשר נטענים דינמית
-  function setupObserver(){
-    const grid = document.getElementById('grid') || document.querySelector('.grid.timetable');
-    if (!grid) return;
-    grid.querySelectorAll('.card').forEach(enhanceCard);
-    const obs = new MutationObserver(muts=>{
-      muts.forEach(m=>{
-        m.addedNodes.forEach(n=>{
-          if (n.nodeType===1 && n.classList.contains('card')) enhanceCard(n);
-          if (n.nodeType===1) n.querySelectorAll?.('.card').forEach(enhanceCard);
-        });
+    <h1>מערכת חוגים — הרשמה בלחיצה</h1>
+    <div class="subtle">בחרו יום/מאמן/רמה ולחצו על "להרשמה"</div>
+
+    <div class="toolbar">
+      <label>יום
+        <select id="daySelect" class="wide">
+          <option value="all">כל הימים</option>
+          <option value="0">א'</option><option value="1">ב'</option><option value="2">ג'</option>
+          <option value="3">ד'</option><option value="4">ה'</option><option value="5">ו'</option><option value="6">ש'</option>
+        </select>
+      </label>
+
+      <label>רמה
+        <select id="levelSelect" class="wide">
+          <option value="all">כל הרמות</option>
+          <option value="גן–א׳">גן–א׳</option>
+          <option value="בנות">בנות</option>
+          <option value="1200">1200–1400</option>
+          <option value="1400">1400–1600</option>
+          <option value="1600">1600–1800</option>
+          <option value="מבוגרים">מבוגרים</option>
+          <option value="+1900">+1900</option>
+        </select>
+      </label>
+
+      <label>מאמן/ת
+        <select id="coachSelect" class="wide">
+          <option value="all">כל המאמנים</option>
+        </select>
+      </label>
+    </div>
+
+    <div id="grid" class="grid timetable"></div>
+
+    <div class="footer">©מועדון השחמט ראשון לציוןן</div>
+  </div>
+
+  <!-- סקריפט הנתונים/רינדור המקורי שלך -->
+  <script defer src="script.js"></script>
+
+  <!-- השבחה: אחידות תגיות, "מד כושר" (גם 1900+), והמחיר בשורה התחתונה בלבד -->
+  <script>
+  (function(){
+    // מנרמל תגיות עליונות + מוסיף "מד כושר" לטווחים ול-1900+ + כותב מחיר בתחתית
+    function normalizeKvTags(card){
+      const kv = card.querySelector('.kv');
+      if (!kv) return;
+
+      // 1) כופה סגנון אחיד על כל ילד (CSS כבר תופס על .kv > *)
+      // 2) “מד כושר” לטווחים (1200–1400) ולסיומת פלוס (1900+ / +1900)
+      Array.from(kv.children).forEach(ch=>{
+        const txt = (ch.textContent||'').trim();
+        if (!txt) return;
+
+        // טווחים
+        const range = txt.match(/\b(\d{3,4})\s*[-–]\s*(\d{3,4})\b/);
+        if (range && !/מד\s*כושר/.test(txt)){
+          ch.textContent = `מד כושר: ${range[0].replace(/\s+/g,'')}`;
+          return;
+        }
+        // פלוס
+        const plus = txt.match(/^\+?\d{3,4}\+?$/);
+        if (plus && !/מד\s*כושר/.test(txt)){
+          const clean = plus[0].replace(/^\+/, '');
+          const pretty = clean.endsWith('+') ? clean : (clean + '+');
+          ch.textContent = `מד כושר ${pretty}`;
+          return;
+        }
       });
-    });
-    obs.observe(grid, {childList:true, subtree:true});
-  }
-
-  insertNotice();
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', setupObserver);
-  } else {
-    setupObserver();
-  }
-})();
-</script>
-<script>
-(function(){
-  // נקה את ההודעה אם קיימת (ביקשת להסיר)
-  const old = document.getElementById('contactNotice');
-  if (old) old.remove();
-
-  // פונקציה שמוסיפה תגיות מחיר ומחילה "מד כושר" על טווחים מספריים
-  function enhanceCard(card){
-    // 1) מצא את שורת התגיות העליונה
-    const kv = card.querySelector('.kv') || card.querySelector('.tags') || card.querySelector('.meta');
-    // 2) מצא טקסט מחיר בסגנון ₪355/₪235 או 355/235₪
-    const priceNode = Array.from(card.querySelectorAll('*')).find(n => {
-      if (!n || n.children?.length) return false;
-      const t = (n.textContent||'').replace(/\s+/g,'');
-      return /₪?\d{2,5}\/₪?\d{2,5}₪?/.test(t);
-    });
-
-    if (priceNode){
-      const t = priceNode.textContent.replace(/\s+/g,'');
-      const m = t.match(/₪?(\d{2,5})\/₪?(\d{2,5})/);
-      if (m){
-        const big = Math.max(+m[1], +m[2]), small = Math.min(+m[1], +m[2]);
-        // עדכנו שורת המחיר התחתונה לכיתוב ברור
-        priceNode.textContent = `יום אחד: ₪${small} • יומיים: ₪${big}`;
-
-        // הוסף גם תגיות מחיר למעלה (אם יש kv)
-        if (kv){
-          const p1 = document.createElement('span');
-          p1.className = 'price-badge';
-          p1.textContent = `יום אחד: ₪${small}`;
-          const p2 = document.createElement('span');
-          p2.className = 'price-badge';
-          p2.textContent = `יומיים: ₪${big}`;
-          kv.appendChild(p1);
-          kv.appendChild(p2);
-        }
-      }
     }
 
-    // 3) “מד כושר” ליד טווחים (למשל 1200–1400)
-    const rangeRe = /\b\d{3,4}\s*[-–]\s*\d{3,4}\b/;
-    (kv || card).querySelectorAll('span,div,em,strong').forEach(el=>{
-      if (!el || el.children?.length) return;
-      const txt = (el.textContent||'').trim();
-      if (rangeRe.test(txt) && !/מד\s*כושר/.test(txt)){
-        el.textContent = `מד כושר: ${txt}`;
-        el.classList?.add('tag'); // יקבל סטייל של תגית אם kv קיים
-      }
-    });
-  }
+    function rewriteBottomPrice(card){
+      const cta = card.querySelector('.cta');
+      if (!cta) return;
+      // חפש “355/235” עם/בלי סימן ₪
+      const leafs = Array.from(cta.children).filter(n => !n.children?.length);
+      const priceNode = leafs.find(n => /₪?\s*\d{2,5}\s*\/\s*₪?\s*\d{2,5}/.test((n.textContent||'').replace(/\s+/g,'')));
+      if (!priceNode) return;
 
-  // הפעלה על כל הכרטיסים + האזנה לטעינה דינמית
-  function run(){
-    const grid = document.getElementById('grid') || document.querySelector('.grid.timetable');
-    if (!grid) return;
-    grid.querySelectorAll('.card').forEach(enhanceCard);
-    const mo = new MutationObserver(muts=>{
-      muts.forEach(m=>{
-        m.addedNodes.forEach(n=>{
-          if (n.nodeType===1 && n.classList?.contains('card')) enhanceCard(n);
-          n.querySelectorAll?.('.card')?.forEach(enhanceCard);
+      const raw = priceNode.textContent.replace(/\s+/g,'');
+      const m = raw.match(/₪?(\d{2,5})\/₪?(\d{2,5})/);
+      if (!m) return;
+
+      const big = Math.max(+m[1], +m[2]), small = Math.min(+m[1], +m[2]);
+      priceNode.textContent = `יום אחד: ₪${small} • יומיים: ₪${big}`;
+    }
+
+    function enhance(){
+      const grid = document.getElementById('grid') || document.querySelector('.grid.timetable');
+      if (!grid) return;
+
+      grid.querySelectorAll('.card').forEach(card=>{
+        normalizeKvTags(card);
+        rewriteBottomPrice(card);
+      });
+
+      // גם לטעינה דינמית
+      const mo = new MutationObserver(muts=>{
+        muts.forEach(m=>{
+          m.addedNodes.forEach(n=>{
+            if (n.nodeType===1 && n.classList?.contains('card')){
+              normalizeKvTags(n);
+              rewriteBottomPrice(n);
+            }
+            n.querySelectorAll?.('.card')?.forEach(c=>{
+              normalizeKvTags(c);
+              rewriteBottomPrice(c);
+            });
+          });
         });
       });
-    });
-    mo.observe(grid,{childList:true,subtree:true});
-  }
+      mo.observe(grid,{childList:true,subtree:true});
+    }
 
-  if (document.readyState==='loading') document.addEventListener('DOMContentLoaded', run);
-  else run();
-})();
-</script>
-
-
+    if (document.readyState==='loading') document.addEventListener('DOMContentLoaded', enhance);
+    else enhance();
+  })();
+  </script>
 </body>
 </html>
