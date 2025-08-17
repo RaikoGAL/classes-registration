@@ -4,28 +4,25 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>אדמין — רישום חוגים</title>
-
   <style>
+    *,*::before,*::after{box-sizing:border-box}
     body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,"Noto Sans Hebrew","Rubik",sans-serif}
     .wrap{max-width:1200px;margin:0 auto;padding:24px}
     .admin-wrap{background:#fff;border:1px solid #e2e8f0;border-radius:16px;box-shadow:0 10px 30px rgba(15,23,42,.06);padding:16px}
     .gate{display:grid;gap:12px;place-items:center;height:55vh}
     .search{flex:1;min-width:220px;padding:10px 12px;border-radius:12px;border:1px solid #e2e8f0}
-
-    /* כפתורים */
-    button,.btn{font-size:16px;border-radius:12px;border:1px solid #e2e8f0;background:#fff;color:#0f172a;
-      transition:transform .08s ease, box-shadow .12s ease, filter .12s ease;}
-    .btn{background:#2563eb;color:#fff;border-color:#1e40af}
-    .btn.alt{background:#f8fafc}
-    .btn.warn{background:#b91c1c;border-color:#7f1d1d;color:#fff}
-    .btn:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(15,23,42,.08)}
-    .btn.warn:hover{box-shadow:0 6px 14px rgba(185,28,28,.25)}
+    button,.btn{font-size:16px;border-radius:12px;border:1px solid #e2e8f0;background:#fff;color:#0f172a;transition:transform .08s,box-shadow .12s,filter .12s}
+    .btn.primary{background:#2563eb;color:#fff;border-color:#1e40af}
+    .btn.primary:hover{box-shadow:0 6px 18px rgba(37,99,235,.25);filter:brightness(0.98)}
+    .btn.alt{background:#e5edff;color:#1e3a8a;border-color:#c7d2fe}
+    .btn.alt:hover{box-shadow:0 6px 16px rgba(30,58,138,.12);filter:brightness(0.98)}
+    .btn.warn{background:#b91c1c;color:#fff;border-color:#7f1d1d}
+    .btn.warn:hover{box-shadow:0 6px 14px rgba(185,28,28,.25);filter:brightness(0.98)}
+    .btn.small{padding:10px 14px}
     .btn:focus-visible{outline:2px solid #94a3b8;outline-offset:2px}
-
     table{width:100%;border-collapse:collapse;font-size:14px;background:#fff;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden}
     th,td{padding:10px;border-bottom:1px solid #e2e8f0;vertical-align:top}
     thead th{background:#f8fafc;color:#1f2937;text-align:right;white-space:nowrap}
-
     .status{padding:2px 8px;border-radius:999px;border:1px solid #cbd5e1;display:inline-block}
     .st-paid{background:#ecfdf5;border-color:#10b981;color:#065f46}
     .st-pending{background:#eff6ff;border-color:#93c5fd;color:#1e3a8a}
@@ -34,7 +31,6 @@
     .muted{color:#64748b;font-size:12px}
     .hidden{display:none}
   </style>
-
   <link rel="stylesheet" href="styles.css">
 </head>
 <body class="light">
@@ -48,10 +44,10 @@
 
     <!-- שער כניסה -->
     <div id="gate" class="gate">
-      <div class="admin-wrap" style="padding:24px;min-width:360px;width:min(460px,100%);text-align:center">
+      <div class="admin-wrap" style="padding:24px;width:min(440px,100%);text-align:center">
         <h2 style="margin:0 0 12px">התחברות לאדמין</h2>
         <input id="adminPass" type="password" placeholder="הכנס סיסמת אדמין" style="width:100%;margin-bottom:8px">
-        <button class="btn" id="enterBtn" style="width:100%">כניסה</button>
+        <button class="btn primary small" id="enterBtn" style="width:auto">כניסה</button>
         <div id="gateMsg" class="muted" style="margin-top:8px"></div>
       </div>
     </div>
@@ -61,7 +57,7 @@
       <div class="admin-wrap">
         <div class="toolbar" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 0 12px">
           <input id="q" class="search" placeholder="חפש לפי שם/טלפון/אימייל/כיתה/סטטוס...">
-          <button id="refreshBtn" class="btn alt">רענן</button>
+          <button id="refreshBtn" class="btn alt small">רענן</button>
         </div>
         <div class="muted" id="countLine" style="margin-bottom:8px"></div>
         <div style="overflow:auto">
@@ -85,44 +81,35 @@
 
 <script>
 (function(){
-  const state = { key:'', data:[], filtered:[] };
-  const el = s => document.querySelector(s);
-  const tbody = () => el('#tbl tbody');
+  const state={key:'',data:[],filtered:[]};
+  const el=s=>document.querySelector(s);
+  const tbody=()=>el('#tbl tbody');
 
-  function fmtDate(iso){ try{ return new Date(iso).toLocaleString('he-IL'); }catch(e){ return iso||''; } }
-  function badge(st){ const cls = st==='paid'?'st-paid':(st==='failed'||st==='canceled')?'st-failed':'st-pending'; return `<span class="status ${cls}">${st||'pending'}</span>`; }
-  const mapOpt = v => {
-    const t = String(v||'').toLowerCase();
-    if (t==='both') return 'שני הימים';
-    if (t==='day1') return 'יום שני';
-    if (t==='day2') return 'יום רביעי';
-    if (t==='single') return 'יום אחד'; // למקרה שנתון ישן
-    return v||'';
-  };
+  function fmtDate(iso){try{return new Date(iso).toLocaleString('he-IL')}catch(e){return iso||''}}
+  function badge(st){const cls=st==='paid'?'st-paid':(st==='failed'||st==='canceled')?'st-failed':'st-pending';return `<span class="status ${cls}">${st||'pending'}</span>`}
+  const mapOpt=v=>{const t=String(v||'').toLowerCase(); if(t==='both')return'שני הימים'; if(t==='day1')return'יום שני'; if(t==='day2')return'יום רביעי'; if(t==='single')return'יום אחד'; return v||'';}
 
   async function fetchEnrollments(){
-    const r = await fetch('/api/admin/enrollments', { headers:{'X-Admin-Key': state.key} });
-    if (!r.ok) throw new Error('unauthorized');
-    return r.json();
+    const r=await fetch('/api/admin/enrollments',{headers:{'X-Admin-Key':state.key}});
+    if(!r.ok) throw new Error('unauthorized'); return r.json();
   }
-  async function setStatus(id, status){
-    const r = await fetch(`/api/admin/enrollments/${encodeURIComponent(id)}/status`, {
-      method:'POST', headers:{'Content-Type':'application/json','X-Admin-Key':state.key}, body:JSON.stringify({status})
+  async function setStatus(id,status){
+    const r=await fetch(`/api/admin/enrollments/${encodeURIComponent(id)}/status`,{
+      method:'POST',headers:{'Content-Type':'application/json','X-Admin-Key':state.key},body:JSON.stringify({status})
     });
-    if (!r.ok) throw new Error('failed'); return r.json();
+    if(!r.ok) throw new Error('failed'); return r.json();
   }
 
   function applyFilter(){
-    const q = (el('#q').value||'').trim().toLowerCase();
-    state.filtered = !q ? state.data : state.data.filter(row =>
-      [row.class_name, row.full_name, row.phone, row.email, row.payment_status, mapOpt(row.selected_option)]
-        .filter(Boolean).some(v => String(v).toLowerCase().includes(q))
-    );
+    const q=(el('#q').value||'').trim().toLowerCase();
+    state.filtered=!q?state.data:state.data.filter(row =>
+      [row.class_name,row.full_name,row.phone,row.email,row.payment_status,mapOpt(row.selected_option)]
+        .filter(Boolean).some(v=>String(v).toLowerCase().includes(q)));
     renderTable();
   }
 
   function renderTable(){
-    const rows = state.filtered.map(row => `
+    const rows=state.filtered.map(row=>`
       <tr>
         <td>${row.class_name||''}</td>
         <td>${row.full_name||''}</td>
@@ -130,35 +117,24 @@
         <td>${badge(row.payment_status)}</td>
         <td>${fmtDate(row.created_at)}</td>
         <td class="row-actions">
-          <button class="btn" data-act="paid" data-id="${row.id}">שולם</button>
-          <button class="btn alt" data-act="pending" data-id="${row.id}">ממתין</button>
-          <button class="btn warn" data-act="failed" data-id="${row.id}">נכשל</button>
+          <button class="btn primary small" data-act="paid" data-id="${row.id}">שולם</button>
+          <button class="btn alt small" data-act="pending" data-id="${row.id}">ממתין</button>
+          <button class="btn warn small" data-act="failed" data-id="${row.id}">נכשל</button>
         </td>
       </tr>`).join('');
-    tbody().innerHTML = rows || `<tr><td colspan="6" class="muted">אין נתונים</td></tr>`;
-    el('#countLine').textContent = `סה״כ: ${state.data.length} | מוצגים: ${state.filtered.length}`;
+    tbody().innerHTML=rows||`<tr><td colspan="6" class="muted">אין נתונים</td></tr>`;
+    el('#countLine').textContent=`סה״כ: ${state.data.length} | מוצגים: ${state.filtered.length}`;
   }
 
-  async function refresh(){ try{ const data = await fetchEnrollments(); state.data=data; state.filtered=data; renderTable(); }
-    catch(e){ el('#gateMsg').textContent='שגיאה בטעינה. בדוק סיסמה/הרשאות.'; } }
+  async function refresh(){try{const data=await fetchEnrollments(); state.data=data; state.filtered=data; renderTable();}
+    catch(e){el('#gateMsg').textContent='שגיאה בטעינה. בדוק סיסמה/הרשאות.';}}
 
-  document.addEventListener('click', async (ev) => {
-    const btn = ev.target.closest('button[data-act]'); if (!btn) return;
-    const id = btn.dataset.id, act = btn.dataset.act;
-    if (act==='paid'||act==='pending'||act==='failed'){ try{ await setStatus(id, act==='failed'?'failed':act); await refresh(); }
-      catch(e){ alert('עדכון סטטוס נכשל'); } }
+  document.addEventListener('click',async ev=>{
+    const btn=ev.target.closest('button[data-act]'); if(!btn) return;
+    const {id,act}=btn.dataset;
+    if(act==='paid'||act==='pending'||act==='failed'){try{await setStatus(id,act==='failed'?'failed':act); await refresh();}catch(e){alert('עדכון סטטוס נכשל');}}
   });
 
-  el('#enterBtn').addEventListener('click', async () => {
-    const pass = (el('#adminPass').value||'').trim(); if(!pass) return;
-    state.key = pass;
-    try{ await refresh(); el('#gate').classList.add('hidden'); el('#content').classList.remove('hidden'); }
-    catch(e){ el('#gateMsg').textContent='סיסמה שגויה או שאין הרשאה.'; }
-  });
-
-  el('#refreshBtn').addEventListener('click', refresh);
-  el('#q').addEventListener('input', applyFilter);
-})();
-</script>
-</body>
-</html>
+  el('#enterBtn').addEventListener('click',async ()=>{
+    const pass=(el('#adminPass').value||'').trim(); if(!pass) return; state.key=pass;
+    try{await refresh(); el('#gate').classList.add('hidden'); el('#con
