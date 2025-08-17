@@ -341,3 +341,55 @@ button, .btn{ transition:transform .08s ease, box-shadow .12s ease, filter .12s 
 .btn.alt:hover{ filter:brightness(0.98); }
 .btn.warn:hover{ box-shadow:0 6px 14px rgba(185,28,28,.25); filter:brightness(0.98); }
 .btn:focus-visible{ outline:2px solid #94a3b8; outline-offset:2px; }
+
+/* ——— Normalize headers like "צור קשר" ——— */
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+body.light .header .logo a{
+  color:#0f172a;
+  text-decoration:none;           /* בלי קו תחתון */
+  font-weight:800;
+}
+body.light .header .logo a:hover{ text-decoration:none; }
+
+body.light .header .actions .back-btn{
+  background:#0f172a;             /* כהה */
+  color:#fff;                     /* טקסט לבן */
+  border-color:#0f172a;
+}
+body.light .header .actions .back-btn:hover{
+  filter:brightness(1.05);
+  box-shadow:0 6px 16px rgba(15,23,42,.12);
+}
+
+/* סלקטים בראש (יום/רמה/מאמן) כברירת מחדל עם קונטרסט מלא */
+body.light .toolbar label{ color:#0f172a !important; font-weight:700; font-size:16px; }
+body.light .toolbar select{
+  appearance:none; -webkit-appearance:none; -moz-appearance:none;
+  background:#fff !important; color:#0f172a !important;
+  border:1px solid #e2e8f0 !important; border-radius:12px !important;
+  padding:10px 14px !important; padding-left:32px !important;
+  background-image:
+    linear-gradient(45deg, transparent 50%, #64748b 50%),
+    linear-gradient(135deg, #64748b 50%, transparent 50%);
+  background-position:left 14px center, left 9px center;
+  background-size:6px 6px, 6px 6px;
+  background-repeat:no-repeat;
+}
+
+/* סכום+כפתור בשורה אחת בהרשמה */
+.payrow{ display:flex; gap:12px; justify-content:flex-end; align-items:center; margin-top:8px; }
+.payrow .amount{ padding:8px 12px; border-radius:999px; background:var(--tag-bg); border:1px solid var(--tag-border); font-weight:700; }
+
+/* כפתורים – אותה שפה עיצובית בכל האתר */
+button,.btn{ transition:transform .08s ease, box-shadow .12s ease, filter .12s ease; }
+.btn.primary{ background:#2563eb; color:#fff; border-color:#1e40af; }
+.btn.primary:hover{ box-shadow:0 6px 18px rgba(37,99,235,.25); filter:brightness(0.98); }
+.btn.alt{ background:#e5edff; color:#1e3a8a; border-color:#c7d2fe; }
+.btn.alt:hover{ box-shadow:0 6px 16px rgba(30,58,138,.12); filter:brightness(0.98); }
+.btn.warn{ background:#b91c1c; color:#fff; border-color:#7f1d1d; }
+.btn.warn:hover{ box-shadow:0 6px 14px rgba(185,28,28,.25); filter:brightness(0.98); }
+.btn.small{ padding:10px 14px; }
+.btn:focus-visible{ outline:2px solid #94a3b8; outline-offset:2px; }
