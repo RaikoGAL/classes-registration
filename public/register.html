@@ -83,5 +83,30 @@ select.wide{width:320px}.form{display:grid;grid-template-columns:repeat(2,1fr);g
 })();
 </script>
 
+<script>
+(function(){
+  const PRICE_ONE = 235;
+  const PRICE_BOTH = 355;
+
+  const sel   = document.getElementById('meetingOption');
+  const price = document.getElementById('price');
+
+  if (!sel || !price) return;
+
+  function updatePrice() {
+    const v = sel.value;
+    const amount = (v === 'both') ? PRICE_BOTH : PRICE_ONE;
+
+    // אם קודם הופיע טקסט כמו "₪355/₪235" – נחליף לערך הנוכחי בלבד
+    price.textContent = '₪' + amount;
+  }
+
+  // הפעלה ראשונית + האזנה לשינוי
+  updatePrice();
+  sel.addEventListener('change', updatePrice);
+})();
+</script>
+
+
 </body>
 </html>
