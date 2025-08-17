@@ -4,22 +4,18 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>טופס הרשמה לחוג</title>
-
-  <!-- ה-css ההיסטורי נשאר; ה-Light והפוליש בקובץ styles.css גוברים -->
   <style>
-    html{direction:rtl}*{box-sizing:border-box}body{margin:0;padding:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,"Noto Sans Hebrew","Rubik",sans-serif;background:#0b0d12;color:#e6e8ee}
+    html{direction:rtl}body{margin:0;padding:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,"Noto Sans Hebrew","Rubik",sans-serif;background:#0b0d12;color:#e6e8ee}
     .container{max-width:1200px;margin:0 auto;padding:24px}
     .header{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
     .logo{font-weight:800;letter-spacing:.3px}
-    .actions a,.btn{display:inline-block;padding:12px 18px;border-radius:14px;border:1px solid #2a3246;background:#121826;color:#e6e8ee;transition:all .2s;font-size:16px}
-    h1,h2,h3{margin:16px 0 8px}
+    .actions a,.btn{display:inline-block;padding:12px 18px;border-radius:14px;border:1px solid #2a3246;background:#121826;color:#e6e8ee;font-size:16px}
     .card{background:linear-gradient(180deg,#0f1422,#0b0f1a);border:1px solid #253048;border-radius:18px;padding:16px;display:flex;flex-direction:column}
     .sessions{margin:8px 0;display:flex;flex-wrap:wrap;gap:6px}
     .form{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.form .full{grid-column:1/-1}
-    .footer{margin-top:32px;text-align:center}
-    @media (max-width:540px){.container{padding:16px}.form{grid-template-columns:1fr}.btn.primary{width:100%}.card{min-height:180px}}
+    .footer{margin-top:32px;text-align:center;color:#334155}
+    @media (max-width:540px){.container{padding:16px}.form{grid-template-columns:1fr}.btn.primary{width:100%}}
   </style>
-
   <link rel="stylesheet" href="styles.css">
 </head>
 <body class="page-register light">
@@ -55,10 +51,10 @@
         <div><label>אימייל<input id="email" type="email"></label></div>
         <div class="full"><label>הערות<textarea id="notes" rows="3" placeholder="מידע רפואי/בקשות"></textarea></label></div>
 
-        <!-- סכום + כפתור באותה שורה בצד שמאל -->
+        <!-- סכום + כפתור בצד שמאל (ללא שורת המחיר העליונה) -->
         <div class="full payrow">
           <div><span>סכום לתשלום:</span> <span class="amount" id="paybarAmount">₪0</span></div>
-          <button type="button" class="btn primary pay-now" onclick="return saveThenPay(event)">מעבר לתשלום</button>
+          <button type="button" class="btn primary small" onclick="return saveThenPay(event)">מעבר לתשלום</button>
         </div>
       </form>
     </div>
@@ -69,41 +65,34 @@
   <script src="script.js"></script>
   <script src="payments.js"></script>
 
-  <!-- קבלת groupId מה-URL -->
   <script>
+    // שמירת groupId מה-URL
     (function () {
       var sp = new URL(location.href).searchParams;
       var g = sp.get('group') || sp.get('groupId') || '';
       if (g) { document.body.dataset.group = g; var h=document.getElementById('groupKey'); if(h) h.value=g; }
     })();
-  </script>
 
-  <!-- ברירת מחדל: שני המפגשים אם קיימים 2; עדכון סכום; ריענון אם חוזרים עם back -->
-  <script>
+    // ברירת מחדל "שני המפגשים" אם יש 2 מפגשים; עדכון סכום; רענון כשחוזרים אחורה
     (function(){
-      const PRICE_ONE  = 235, PRICE_BOTH = 355;
-      const sel = document.getElementById('meetingOption');
-      const pay = document.getElementById('paybarAmount');
-      const sessionsBox = document.getElementById('sessionsList');
+      const PRICE_ONE=235, PRICE_BOTH=355;
+      const sel=document.getElementById('meetingOption');
+      const pay=document.getElementById('paybarAmount');
+      const sessions=document.getElementById('sessionsList');
 
-      function amountFor(v){ return v==='both' ? PRICE_BOTH : PRICE_ONE; }
-      function update(){ if (sel && pay){ pay.textContent = '₪' + amountFor(sel.value); } }
-
+      function amount(v){ return v==='both'?PRICE_BOTH:PRICE_ONE; }
+      function update(){ pay.textContent='₪'+amount(sel.value); }
       function chooseDefault(){
-        const cnt = sessionsBox ? sessionsBox.querySelectorAll('.session').length : 0;
-        sel.value = (cnt >= 2) ? 'both' : 'day1';
+        const cnt=sessions?sessions.querySelectorAll('.session').length:0;
+        sel.value = (cnt>=2)?'both':'day1';
         update();
       }
-
-      // אם חוזרים אחורה (BFCache) – נטען מחדש כדי למנוע כפילויות
-      window.addEventListener('pageshow', e => { if (e.persisted) location.reload(); });
-
-      if (sel){
-        // עדכון כש- script.js מוסיף את המפגשים דינמית
-        const mo = new MutationObserver(chooseDefault);
-        if (sessionsBox) mo.observe(sessionsBox,{childList:true,subtree:true});
+      window.addEventListener('pageshow',e=>{ if(e.persisted) location.reload(); });
+      if(sel){
+        const mo=new MutationObserver(chooseDefault);
+        if(sessions) mo.observe(sessions,{childList:true,subtree:true});
         chooseDefault();
-        sel.addEventListener('change', update);
+        sel.addEventListener('change',update);
       }
     })();
   </script>
