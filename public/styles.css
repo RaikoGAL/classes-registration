@@ -33,3 +33,19 @@ select,input,textarea{ font-size: 18px !important; padding: 14px 16px !important
 
 /* הודעת “עדיף לפנות” – להשבתה (למקרה שעדיין קיימת) */
 #contactNotice{ display:none !important; }
+/* === Register form alignment (2025-08-17) === */
+.page-register .form {
+  grid-template-columns: 1fr 1fr !important;
+  gap: 16px 24px !important;
+  align-items: start;
+}
+.page-register .form > * { justify-self: stretch; }
+
+.page-register .form label { display: block; width: 100%; }
+
+.page-register .form input,
+.page-register .form select,
+.page-register .form textarea {
+  width: 100% !important;          /* מבטל את 260px הגלובלי */
+  box-sizing: border-box !important;
+}
