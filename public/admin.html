@@ -137,4 +137,13 @@
 
   el('#enterBtn').addEventListener('click',async ()=>{
     const pass=(el('#adminPass').value||'').trim(); if(!pass) return; state.key=pass;
-    try{await refresh(); el('#gate').classList.add('hidden'); el('#con
+    try{await refresh(); el('#gate').classList.add('hidden'); el('#content').classList.remove('hidden');}
+    catch(e){el('#gateMsg').textContent='סיסמה שגויה או שאין הרשאה.';}
+  });
+
+  el('#refreshBtn').addEventListener('click',refresh);
+  el('#q').addEventListener('input',applyFilter);
+})();
+</script>
+</body>
+</html>
