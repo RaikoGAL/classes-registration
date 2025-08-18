@@ -393,3 +393,60 @@ button,.btn{ transition:transform .08s ease, box-shadow .12s ease, filter .12s e
 .btn.warn:hover{ box-shadow:0 6px 14px rgba(185,28,28,.25); filter:brightness(0.98); }
 .btn.small{ padding:10px 14px; }
 .btn:focus-visible{ outline:2px solid #94a3b8; outline-offset:2px; }
+
+/* === STEP 1: אחידות תגיות + נראות מסננים (בטוח, CSS בלבד) === */
+
+/* תגיות למעלה בכרטיסים (מאמן/רמה/מד-כושר) – אחידות, בלי מילוי כהה */
+.kv .badge,
+.kv > span,
+.kv > div {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid #d5e1f6;       /* קו עדין */
+  background: #fff;                /* ללא מילוי כהה */
+  color: #0f172a;                  /* טקסט כהה וקריא */
+  font-size: 14px;
+  line-height: 1;
+}
+
+/* “שעות״/סשנים – ממשיכים להיראות כמו תגיות בחירה, אבל עם מקווקו */
+.sessions .session {
+  background: #fff;
+  border: 1px dashed #d5e1f6;
+  color: #0f172a;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 13px;
+}
+
+/* מסננים בראש העמוד: כותרת ברורה, וה־select נראים כמו בחירה */
+.toolbar label {
+  color: #0f172a;        /* לא אפור על לבן */
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.toolbar select,
+.toolbar input {
+  background: #fff;
+  color: #0f172a;
+  border: 1px solid #d5e1f6;
+  border-radius: 14px;
+  padding: 10px 12px;
+  box-shadow: 0 1px 0 rgba(15, 23, 42, 0.03);
+}
+
+/* :hover/:focus קלילים ל־selectים */
+.toolbar select:hover,
+.toolbar input:hover {
+  border-color: #b7c8ec;
+}
+.toolbar select:focus,
+.toolbar input:focus {
+  outline: 0;
+  border-color: #8fb0f0;
+  box-shadow: 0 0 0 3px rgba(143,176,240,.25);
+}
