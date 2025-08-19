@@ -1,33 +1,16 @@
 <!doctype html>
 <html lang="he">
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>מערכת חוגים — דמו מובייל</title>
-<style>
-html{direction:rtl}*{box-sizing:border-box}body{margin:0;padding:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,"Noto Sans Hebrew","Rubik",sans-serif;background:#0b0d12;color:#e6e8ee}
-a{color:#a4c2ff;text-decoration:none}.container{max-width:1200px;margin:0 auto;padding:24px}
-.header{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}.logo{font-weight:800;letter-spacing:.3px}
-.header .actions{display:flex;gap:10px;flex-wrap:wrap}.header .actions a,.btn{display:inline-block;padding:12px 18px;border-radius:14px;border:1px solid #2a3246;background:#121826;color:#e6e8ee;transition:all .2s;font-size:16px}
-h1,h2,h3{margin:16px 0 8px}.subtle{color:#9aa4b2;font-size:14px}
-.card{background:linear-gradient(180deg,#0f1422,#0b0f1a);border:1px solid #253048;border-radius:18px;padding:16px;display:flex;flex-direction:column;min-height:220px}
-.grid{display:grid;gap:16px}.grid.timetable{grid-template-columns:repeat(3,1fr)}
-.kv{display:flex;flex-wrap:wrap;gap:8px 10px;font-size:14px;color:#cbd5e1}.badge{font-size:12px;padding:4px 8px;background:#12233d;border:1px solid #2a4778;border-radius:999px;color:#cfe1ff}
-.sessions{margin:8px 0;display:flex;flex-wrap:wrap;gap:6px}.session{font-size:12px;padding:4px 8px;border-radius:999px;background:#132236;border:1px dashed #2a4778}
-.cta{margin-top:auto;display:flex;justify-content:space-between;align-items:center;gap:12px}.price{font-size:14px;color:#cbd5e1}.btn.primary{background:#1a3a8a;border-color:#3154a5}
-.toolbar{display:flex;gap:12px;align-items:flex-end;margin:12px 0 20px;flex-wrap:wrap}label{font-size:15px;color:#cbd5e1;display:block}
-select,input,textarea{width:260px;padding:12px 14px;border-radius:14px;border:1px solid #2c3448;background:#0e1422;color:#e6e8ee;font-size:16px}
-select.wide{width:320px}.form{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.form .full{grid-column:1/-1}
-.footer{margin-top:32px;color:#97a3b6;font-size:13px;text-align:center}.gate{display:grid;gap:12px;place-items:center;padding:48px 16px}
-.tel{font-size:28px;display:block;margin:6px 0}.ltr{direction:ltr;unicode-bidi:bidi-override}
-@media (max-width:980px){.grid.timetable{grid-template-columns:repeat(2,1fr)}}
-@media (max-width:640px){.grid.timetable{grid-template-columns:1fr}}
-@media (max-width:540px){.container{padding:16px}h1{font-size:1.6rem}.toolbar{flex-direction:column;align-items:stretch}select,input,textarea,select.wide{width:100%}.cta{flex-direction:column;align-items:stretch}.btn.primary{width:100%;text-align:center}.card{min-height:180px}}
-</style>
-<body>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>מערכת חוגים — דמו מובייל</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="light">
   <div class="container">
     <div class="header">
       <div class="logo">מועדון השחמט — דמו מובייל</div>
-      <div class="actions"><a href="#grid">למערכת</a></div>
+      <div class="actions"><a class="btn" href="index.html">למערכת</a></div>
     </div>
     <h1>הרשמה מהירה</h1>
     <div class="toolbar">
@@ -43,179 +26,13 @@ select.wide{width:320px}.form{display:grid;grid-template-columns:repeat(2,1fr);g
       </label>
     </div>
     <div id="grid" class="grid timetable"></div>
-    <div class="footer">קובץ יחיד — מתאים להעלאה לכל שרת סטטי.</div>
+    <footer class="site-footer">
+      <div class="grid">
+        <div>קובץ יחיד — מותאם לנייד</div>
+        <div><a href="contact.html">צור קשר</a></div>
+      </div>
+    </footer>
   </div>
-<script>
-
-function $(sel, root=document){ return root.querySelector(sel); }
-function $all(sel, root=document){ return Array.from(root.querySelectorAll(sel)); }
-const M = 
-{
-  "g1200_day1": "https://meshulam.co.il/purchase?b=28c285802ed7b9e20144601019fd895d",
-  "g1200_day2": "https://meshulam.co.il/purchase?b=28c285802ed7b9e20144601019fd895d",
-  "g1200_both": "https://meshulam.co.il/purchase?b=779414282cc42ace3a7910b5519e3208",
-  "g1400_day1": "https://meshulam.co.il/purchase?b=ce976e44d99950191d8234a1c8bac33a",
-  "g1400_day2": "https://meshulam.co.il/purchase?b=ce976e44d99950191d8234a1c8bac33a",
-  "g1400_both": "https://meshulam.co.il/purchase?b=f4339424ec52b34e25dd1721d3b7661e",
-  "maya_sun_kids": "https://meshulam.co.il/purchase?b=b43a28b1f2c05646c5e306fdfa29ec76",
-  "yaron_sun_rated1200": "https://meshulam.co.il/purchase?b=df23ad22774cc219f5e0013115c96bc7",
-  "yaron_sun_adults": "https://meshulam.co.il/purchase?b=a7a4c5fc5deb10e52b05f5f11c666c91",
-  "or_wed_adults": "#",
-  "girls_beg_tue": "https://meshulam.co.il/purchase?b=90d7e8c8f069d0634ec636ee8dba0dd2",
-  "girls_adv_tue": "https://meshulam.co.il/purchase?b=c62bbbba3b7d719a7d093420ac1faf7c",
-  "yaron_thu_kids_beg": "https://meshulam.co.il/purchase?b=b6d2eec45b75673832ed360488f3bf5d",
-  "yaron_thu_kids_cont": "https://meshulam.co.il/purchase?b=64cea8000708357f8146213729ac3bec",
-  "vitali_mon_1600": "https://meshulam.co.il/purchase?b=cf8f51bfa8f806f245abe3341dd2dfdd"
-};
-
-const classGroups = [
-  { id:'grp-rated-1200-1400', title:'מדורגים', level:'1200–1400', coach:'גלב קגנסקי', price:'₪235/₪355',
-    sessions:[{ day:1, dayName:'שני', time:'16:00–17:30' }, { day:3, dayName:'רביעי', time:'16:00–17:30' }],
-    meshulamOptions: { day1: M.g1200_day1, day2: M.g1200_day2, both: M.g1200_both } },
-  { id:'grp-adv-1400-1600', title:'מתקדמים', level:'1400–1600', coach:'גלב קגנסקי', price:'₪235/₪355',
-    sessions:[{ day:1, dayName:'שני', time:'17:45–19:15' }, { day:3, dayName:'רביעי', time:'17:45–19:15' }],
-    meshulamOptions: { day1: M.g1400_day1, day2: M.g1400_day2, both: M.g1400_both } },
-
-  { id:'cls-kids-maya-sun', title:"גן–א' מתחילים", level:'גן–א׳', coach:'מאיה לפושניאן', price:'₪195',
-    sessions:[{ day:0, dayName:'ראשון', time:'16:30–17:30' }], meshulam: M.maya_sun_kids },
-  { id:'cls-girls-beg-tue', title:'חוג בנות מתחילות', level:'בנות', coach:'מאיה לפושניאן', price:'₪195',
-    sessions:[{ day:2, dayName:'שלישי', time:'16:00–17:00' }], meshulam: M.girls_beg_tue },
-  { id:'cls-girls-adv-tue', title:'חוג בנות ממשיכות', level:'בנות', coach:'מאיה לפושניאן', price:'₪195',
-    sessions:[{ day:2, dayName:'שלישי', time:'17:00–18:00' }], meshulam: M.girls_adv_tue },
-  { id:'cls-kids-yaron-thu', title:"גן–א' מתחילים", level:'גן–א׳', coach:'ירון ליניק', price:'₪195',
-    sessions:[{ day:4, dayName:'חמישי', time:'16:30–17:30' }], meshulam: M.yaron_thu_kids_beg },
-  { id:'cls-kids-cont-yaron-thu', title:"גן–א' ממשיכים", level:'גן–א׳', coach:'ירון ליניק', price:'₪195',
-    sessions:[{ day:4, dayName:'חמישי', time:'17:30–18:30' }], meshulam: M.yaron_thu_kids_cont },
-
-  { id:'cls-rated-yaron-1200-1400-sun', title:'מדורגים', level:'1200–1400', coach:'ירון ליניק', price:'₪235',
-    sessions:[{ day:0, dayName:'ראשון', time:'17:30–19:00' }], meshulam: M.yaron_sun_rated1200 },
-  { id:'cls-vitali-1600-1800-mon', title:'מתקדמים', level:'1600–1800', coach:'ויטלי גולוד', price:'₪235',
-    sessions:[{ day:1, dayName:'שני', time:'19:30–21:00' }], meshulam: M.vitali_mon_1600 },
-
-  { id:'cls-adults-yaron-sun', title:'חוג מבוגרים', level:'מבוגרים', coach:'ירון ליניק', price:'₪235',
-    sessions:[{ day:0, dayName:'ראשון', time:'19:15–20:45' }], meshulam: M.yaron_sun_adults },
-
-  { id:'cls-adults-or-wed', title:'חוג מבוגרים', level:'+1900', coach:'אור ברונשטיין', price:'יפורסם בהמשך',
-    sessions:[{ day:3, dayName:'רביעי', time:'19:30–21:00' }], meshulam: M.or_wed_adults },
-];
-
-function renderTimetable(){
-  const grid = $('#grid');
-  if (!grid) return;
-  grid.innerHTML='';
-
-  const day = $('#daySelect').value;
-  const level = $('#levelSelect').value;
-  const coach = $('#coachSelect').value;
-
-  const filtered = classGroups.filter(g => {
-    const hitDay = (day==='all' || g.sessions.some(s => String(s.day) === String(day)));
-    const hitLevel = (level==='all' || g.level.includes(level));
-    const hitCoach = (coach==='all' || g.coach === coach);
-    return hitDay && hitLevel && hitCoach;
-  });
-
-  filtered.forEach(g => {
-    const card = document.createElement('div');
-    card.className = 'card';
-    const sessions = g.sessions.map(s => `<span class="session">${s.dayName} • ${s.time}</span>`).join('');
-    card.innerHTML = `
-      <div class="kv">
-        <div><span class="badge">${g.level}</span></div>
-        <div><span class="badge">${g.coach}</span></div>
-      </div>
-      <h3>${g.title}</h3>
-      <div class="sessions">${sessions}</div>
-      <div class="cta">
-        <div class="price">${g.price}</div>
-        <a class="btn primary" href="register.html?groupId=${encodeURIComponent(g.id)}">להרשמה</a>
-      </div>
-    `;
-    grid.appendChild(card);
-  });
-}
-
-function populateCoachFilter(){
-  const coaches = Array.from(new Set(classGroups.map(g => g.coach))).sort((a,b)=>a.localeCompare(b));
-  const sel = $('#coachSelect');
-  if (!sel) return;
-  sel.innerHTML = `<option value="all">כל המאמנים</option>` + coaches.map(c => `<option>${c}</option>`).join('');
-}
-
-function getQuery(){ const q = new URLSearchParams(location.search); return Object.fromEntries(q.entries()); }
-
-function resolveMeshulam(grp, option){
-  if (grp.meshulamOptions){
-    if (option==='day1') return grp.meshulamOptions.day1;
-    if (option==='day2') return grp.meshulamOptions.day2;
-    return grp.meshulamOptions.both;
-  }
-  return grp.meshulam;
-}
-
-function initRegister(){
-  if (!$('#regForm')) return;
-  const { groupId } = getQuery();
-  const grp = classGroups.find(g => g.id === groupId) || classGroups[0];
-
-  $('#classTitle').textContent = grp.title;
-  $('#classMeta').textContent = `${grp.level} • מאמן/ת: ${grp.coach}`;
-  $('#price').textContent = grp.price;
-
-  const optSel = $('#meetingOption');
-  optSel.innerHTML = '';
-  if (grp.sessions.length === 2){
-    const [s1, s2] = grp.sessions;
-    optSel.innerHTML = `
-      <option value="both">שני הימים (${s1.dayName}+${s2.dayName})</option>
-      <option value="day1">${s1.dayName} (${s1.time})</option>
-      <option value="day2">${s2.dayName} (${s2.time})</option>`;
-  } else {
-    const s = grp.sessions[0];
-    optSel.innerHTML = `<option value="single">${s.dayName} (${s.time})</option>`;
-  }
-
-  $('#sessionsList').innerHTML = grp.sessions.map(s => `<span class="session">${s.dayName} • ${s.time}</span>`).join('');
-
-  $('#regForm').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const opt = $('#meetingOption').value;
-    const redirect = resolveMeshulam(grp, opt==='single' ? 'day1' : opt);
-    if (!redirect || redirect === '#') { alert('כרגע אין קישור תשלום זמין לחוג זה.'); return; }
-    const qs = new URLSearchParams({ groupId: grp.id, option: opt }).toString();
-    const delimiter = redirect.includes('?') ? '&' : '?';
-    location.href = redirect + delimiter + qs;
-  });
-}
-
-function initAdmin(){
-  if (!$('#adminRoot')) return;
-  const gate = $('#gate');
-  const content = $('#adminContent');
-  const btn = $('#unlockBtn');
-  if (btn){
-    btn.addEventListener('click', () => {
-      const val = ($('#pwd').value || '').trim();
-      if (val === '123456'){ gate.style.display='none'; content.style.display='block'; }
-      else { $('#gateMsg').textContent = 'סיסמה שגויה'; }
-    });
-  }
-}
-
-function initIndex(){
-  if (!$('#grid')) return;
-  populateCoachFilter();
-  renderTimetable();
-  const ds = $('#daySelect'), ls = $('#levelSelect'), cs = $('#coachSelect');
-  ds && ds.addEventListener('change', renderTimetable);
-  ls && ls.addEventListener('change', renderTimetable);
-  cs && cs.addEventListener('change', renderTimetable);
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  initIndex(); initRegister(); initAdmin();
-});
-
-</script>
+  <script src="script.js" defer></script>
 </body>
 </html>
