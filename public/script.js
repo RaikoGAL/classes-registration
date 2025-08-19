@@ -1,126 +1,135 @@
-// ===== Rishon Chess Club — data, filters, and rendering for index/register/mobile =====
-(function(global){
-  const $ = (sel, root=document)=>root.querySelector(sel);
-  const $all = (sel, root=document)=>Array.from(root.querySelectorAll(sel));
+/* ===== Rishon Chess Club — Global Light Theme & Components ===== */
+:root{
+  --brand:#2563eb; --ink:#0f172a; --muted:#64748b;
+  --line:#e2e8f0; --page:#f8fafc; --card:#ffffff;
+  --shadow:0 10px 30px rgba(15,23,42,.06);
+}
 
-  // Meshulam mappings (שמור/עדכן לפי החשבונות שלכם)
-  const M = {
-    g1200_day1: "https://meshulam.co.il/purchase?b=28c285802ed7b9e20144601019fd895d",
-    g1200_day2: "https://meshulam.co.il/purchase?b=28c285802ed7b9e20144601019fd895d",
-    g1200_both: "https://meshulam.co.il/purchase?b=779414282cc42ace3a7910b5519e3208",
-    g1400_day1: "https://meshulam.co.il/purchase?b=ce976e44d99950191d8234a1c8bac33a",
-    g1400_day2: "https://meshulam.co.il/purchase?b=ce976e44d99950191d8234a1c8bac33a",
-    g1400_both: "https://meshulam.co.il/purchase?b=f4339424ec52b34e25dd1721d3b7661e",
-    maya_sun_kids: "https://meshulam.co.il/purchase?b=b43a28b1f2c05646c5e306fdfa29ec76",
-    yaron_sun_rated1200: "https://meshulam.co.il/purchase?b=df23ad22774cc219f5e0013115c96bc7",
-    yaron_sun_adults: "https://meshulam.co.il/purchase?b=a7a4c5fc5deb10e52b05f5f11c666c91",
-    or_wed_adults: "#",
-    girls_beg_tue: "https://meshulam.co.il/purchase?b=90d7e8c8f069d0634ec636ee8dba0dd2",
-    girls_adv_tue: "https://meshulam.co.il/purchase?b=c62bbbba3b7d719a7d093420ac1faf7c",
-    yaron_thu_kids_beg: "https://meshulam.co.il/purchase?b=b6d2eec45b75673832ed360488f3bf5d",
-    yaron_thu_kids_cont: "https://meshulam.co.il/purchase?b=64cea8000708357f8146213729ac3bec",
-    vitali_mon_1600: "https://meshulam.co.il/purchase?b=cf8f51bfa8f806f245abe3341dd2dfdd"
-  };
+*,
+*::before,
+*::after{ box-sizing:border-box; }
 
-  const classGroups = [
-    { id:'grp-rated-1200-1400', title:'מדורגים', level:'1200–1400', coach:'גלב קגנסקי', price:'₪235/₪355',
-      sessions:[{ day:1, dayName:'שני', time:'16:00–17:30' }, { day:3, dayName:'רביעי', time:'16:00–17:30' }],
-      meshulamOptions: { day1: M.g1200_day1, day2: M.g1200_day2, both: M.g1200_both } },
-    { id:'grp-adv-1400-1600', title:'מתקדמים', level:'1400–1600', coach:'גלב קגנסקי', price:'₪235/₪355',
-      sessions:[{ day:1, dayName:'שני', time:'17:45–19:15' }, { day:3, dayName:'רביעי', time:'17:45–19:15' }],
-      meshulamOptions: { day1: M.g1400_day1, day2: M.g1400_day2, both: M.g1400_both } },
+html{ direction:rtl }
+body{
+  margin:0; padding:0;
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,"Noto Sans Hebrew","Rubik",sans-serif;
+  background:var(--page); color:var(--ink); font-size:18px;
+}
 
-    { id:'cls-kids-maya-sun', title:"גן–א' מתחילים", level:'גן–א׳', coach:'מאיה לפושניאן', price:'₪195',
-      sessions:[{ day:0, dayName:'ראשון', time:'16:30–17:30' }], meshulam: M.maya_sun_kids },
-    { id:'cls-girls-beg-tue', title:'חוג בנות מתחילות', level:'בנות', coach:'מאיה לפושניאן', price:'₪195',
-      sessions:[{ day:2, dayName:'שלישי', time:'16:00–17:00' }], meshulam: M.girls_beg_tue },
-    { id:'cls-girls-adv-tue', title:'חוג בנות ממשיכות', level:'בנות', coach:'מאיה לפושניאן', price:'₪195',
-      sessions:[{ day:2, dayName:'שלישי', time:'17:00–18:00' }], meshulam: M.girls_adv_tue },
-    { id:'cls-kids-yaron-thu', title:"גן–א' מתחילים", level:'גן–א׳', coach:'ירון ליניק', price:'₪195',
-      sessions:[{ day:4, dayName:'חמישי', time:'16:30–17:30' }], meshulam: M.yaron_thu_kids_beg },
-    { id:'cls-kids-cont-yaron-thu', title:"גן–א' ממשיכים", level:'גן–א׳', coach:'ירון ליניק', price:'₪195',
-      sessions:[{ day:4, dayName:'חמישי', time:'17:30–18:30' }], meshulam: M.yaron_thu_kids_cont },
+a{ color:var(--brand); text-decoration:none; }
+a:hover{ text-decoration:underline; }
 
-    { id:'cls-rated-yaron-1200-1400-sun', title:'מדורגים', level:'1200–1400', coach:'ירון ליניק', price:'₪235',
-      sessions:[{ day:0, dayName:'ראשון', time:'17:30–19:00' }], meshulam: M.yaron_sun_rated1200 },
-    { id:'cls-vitali-1600-1800-mon', title:'מתקדמים', level:'1600–1800', coach:'ויטלי גולוד', price:'₪235',
-      sessions:[{ day:1, dayName:'שני', time:'19:30–21:00' }], meshulam: M.vitali_mon_1600 },
+.container{ max-width:1320px; margin:0 auto; padding:24px; }
+h1{ font-size:clamp(30px,4vw,42px); margin:22px 0 8px; }
+h2{ font-size:clamp(22px,3vw,28px); }
+h3{ font-size:clamp(18px,2.4vw,24px); }
+.subtle{ color:var(--muted); }
 
-    { id:'cls-adults-yaron-sun', title:'חוג מבוגרים', level:'מבוגרים', coach:'ירון ליניק', price:'₪235',
-      sessions:[{ day:0, dayName:'ראשון', time:'19:15–20:45' }], meshulam: M.yaron_sun_adults },
+.btn{
+  display:inline-flex; align-items:center; gap:8px;
+  border:1px solid var(--line);
+  border-radius:12px; background:#fff; color:var(--ink);
+  padding:12px 16px; font-size:18px;
+  transition:transform .08s ease, box-shadow .12s ease, filter .12s ease;
+  cursor:pointer;
+}
+.btn:hover{ transform:translateY(-1px); box-shadow:0 6px 16px rgba(15,23,42,.08); }
+.btn.primary{ background:var(--brand); border-color:#1e40af; color:#fff; min-height:48px; }
+.btn.primary::after{ content:" →"; font-weight:700; }
 
-    { id:'cls-adults-or-wed', title:'חוג מבוגרים', level:'+1900', coach:'אור ברונשטיין', price:'יפורסם בהמשך',
-      sessions:[{ day:3, dayName:'רביעי', time:'19:30–21:00' }], meshulam: M.or_wed_adults },
-  ];
+select,input,textarea{
+  width:100%;
+  font-size:18px; padding:12px 14px;
+  background:#fff; color:var(--ink);
+  border:1px solid var(--line); border-radius:12px; outline:none;
+}
 
-  function getQuery(){ const q = new URLSearchParams(location.search); return Object.fromEntries(q.entries()); }
+.header{
+  display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap;
+  background:rgba(255,255,255,.92); border:1px solid var(--line);
+  border-radius:14px; padding:10px 14px; margin:16px 0 20px;
+  backdrop-filter:saturate(1.1) blur(6px);
+}
+.logo{ font-weight:800; letter-spacing:.2px; }
+.logo a{ color:var(--brand); text-decoration:none; }
+.actions{ display:flex; gap:10px; flex-wrap:wrap; }
 
-  function populateCoachFilter(){
-    const coaches = Array.from(new Set(classGroups.map(g => g.coach))).sort((a,b)=>a.localeCompare(b,'he'));
-    const sel = $('#coachSelect'); if(!sel) return;
-    sel.innerHTML = `<option value="all">כל המאמנים</option>` + coaches.map(c=>`<option>${c}</option>`).join('');
-  }
+.card{
+  background:var(--card); border:1px solid var(--line);
+  border-radius:18px; padding:20px; box-shadow:var(--shadow);
+  display:flex; flex-direction:column; min-height:240px;
+}
 
-  function renderTimetable(){
-    const grid = $('#grid'); if (!grid) return;
+.grid{ display:grid; gap:18px; }
+.grid.timetable{ grid-template-columns:repeat(3, minmax(360px,1fr)); }
 
-    const daySel = $('#daySelect'), levelSel = $('#levelSelect'), coachSel = $('#coachSelect');
-    const day   = daySel ? daySel.value : 'all';
-    const level = levelSel ? levelSel.value : 'all';
-    const coach = coachSel ? coachSel.value : 'all';
+.kv{ display:flex; flex-wrap:wrap; gap:10px; }
+.kv > *{
+  display:inline-flex; align-items:center; gap:6px;
+  padding:6px 10px; border-radius:9999px;
+  border:1px solid #cbd5e1; background:#fff; color:#334155; font-size:16px; line-height:1;
+}
 
-    const filtered = classGroups.filter(g => {
-      const hitDay = (day==='all' || g.sessions.some(s => String(s.day) === String(day)));
-      const hitLevel = (level==='all' || g.level.includes(level));
-      const hitCoach = (coach==='all' || g.coach === coach);
-      return hitDay && hitLevel && hitCoach;
-    });
+.sessions{ margin:8px 0; display:flex; flex-wrap:wrap; gap:6px; }
+.sessions > *{
+  background:#fff; border:1px dashed #cbd5e1; color:#475569;
+  padding:6px 10px; border-radius:9999px; font-size:15px;
+}
 
-    grid.innerHTML = '';
-    filtered.forEach(g => {
-      const card = document.createElement('div');
-      card.className = 'card';
-      const sessions = g.sessions.map(s => `<span class="session">${s.dayName} • ${s.time}</span>`).join('');
-      card.innerHTML = `
-        <div class="kv">
-          <div>${g.level}</div>
-          <div>${g.coach}</div>
-        </div>
-        <h3>${g.title}</h3>
-        <div class="sessions">${sessions}</div>
-        <div class="cta">
-          <div class="price">${g.price}</div>
-          <a class="btn primary" href="register.html?groupId=${encodeURIComponent(g.id)}">להרשמה</a>
-        </div>`;
-      grid.appendChild(card);
-    });
-  }
+.toolbar{ display:flex; gap:12px; align-items:flex-end; margin:12px 0 20px; flex-wrap:wrap; }
+.toolbar label{ color:var(--ink); font-weight:700; font-size:16px; display:block; }
+.toolbar select{
+  appearance:none; -webkit-appearance:none;
+  padding-right:14px; padding-left:32px;
+  background-image:
+    linear-gradient(45deg, transparent 50%, #64748b 50%),
+    linear-gradient(135deg, #64748b 50%, transparent 50%);
+  background-position:left 14px center, left 9px center;
+  background-size:6px 6px; background-repeat:no-repeat;
+  width:320px;
+}
 
-  function initIndex(){
-    if (!$('#grid')) return;
-    populateCoachFilter();
-    ['daySelect','levelSelect','coachSelect'].forEach(id=>{
-      const el = $('#'+id); el && el.addEventListener('change', renderTimetable);
-    });
-    renderTimetable();
-  }
+.cta{ margin-top:auto; display:flex; justify-content:space-between; align-items:center; gap:12px; }
+.price{ color:#475569; font-weight:600; }
 
-  function initRegisterMeta(){
-    if (!$('#regForm')) return;
-    const { groupId } = getQuery();
-    const grp = classGroups.find(g => g.id === groupId);
-    if (!grp) return;
-    $('#classTitle').textContent = grp.title;
-    $('#classMeta').textContent = `${grp.level} • מאמן/ת: ${grp.coach}`;
-  }
+.site-footer{
+  margin-top:28px; padding:18px 14px;
+  background:#fff; border:1px solid var(--line); border-radius:12px;
+  color:#334155; font-size:15px;
+}
+.site-footer .grid{ display:grid; grid-template-columns:1fr auto; gap:12px; align-items:center; }
+@media (max-width:640px){ .site-footer .grid{ grid-template-columns:1fr; gap:8px; } }
 
-  // Expose for payments.js
-  global.RCC = { classGroups, M };
+.footer{ margin-top:32px; color:#97a3b6; font-size:13px; text-align:center; }
 
-  // Boot
-  if (document.readyState==='loading'){
-    document.addEventListener('DOMContentLoaded', ()=>{ initIndex(); initRegisterMeta(); });
-  }else{
-    initIndex(); initRegisterMeta();
-  }
-})(window);
+/* ===== Register page ===== */
+.page-register .form{ display:grid; grid-template-columns:1fr 1fr; gap:16px 24px; align-items:start; }
+.page-register .form .full{ grid-column:1 / -1; }
+#meetingOption{ width:auto; min-width:340px; }
+
+/* Pay bar / amount */
+.payrow, .paybar{ display:flex; gap:12px; justify-content:flex-end; align-items:center; margin-top:8px; }
+.amount{ padding:8px 12px; border-radius:999px; background:#f5f8ff; border:1px solid #cbd5e1; font-weight:700; }
+
+/* ===== Admin page ===== */
+.search{ min-width:220px; }
+table{ width:100%; border-collapse:collapse; background:#fff; border:1px solid var(--line); border-radius:12px; overflow:hidden; }
+th,td{ padding:12px; border-bottom:1px solid var(--line); vertical-align:top; font-size:15px; }
+thead th{ background:#f8fafc; color:#1f2937; text-align:right; white-space:nowrap; }
+.row-actions{ display:flex; gap:8px; flex-wrap:wrap; }
+.status{ padding:2px 8px; border-radius:999px; border:1px solid #cbd5e1; display:inline-flex; align-items:center; gap:6px; }
+.st-paid{ background:#ecfdf5; border-color:#10b981; color:#065f46; }
+.st-pending{ background:#eff6ff; border-color:#93c5fd; color:#1e3a8a; }
+.st-failed{ background:#fef2f2; border-color:#fecaca; color:#991b1b; }
+
+/* ===== Responsiveness ===== */
+@media (max-width:980px){ .grid.timetable{ grid-template-columns:repeat(2,1fr); } }
+@media (max-width:640px){
+  .grid.timetable{ grid-template-columns:1fr; }
+  .container{ padding:16px; }
+  .btn.primary{ width:100%; text-align:center; }
+  .card{ min-height:180px; }
+  .toolbar{ flex-direction:column; align-items:stretch; }
+  .page-register .form{ grid-template-columns:1fr; }
+  #meetingOption{ width:100%; min-width:0; }
+}
