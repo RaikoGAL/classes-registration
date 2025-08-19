@@ -1,33 +1,145 @@
 <!doctype html>
-<html lang="he">
+<html lang="he" dir="rtl">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>אדמין — נרשמים לחוגים</title>
-  <style>
-html{direction:rtl}*{box-sizing:border-box}body{margin:0;padding:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,"Noto Sans Hebrew","Rubik",sans-serif;background:#0b0d12;color:#e6e8ee}
-a{color:#a4c2ff;text-decoration:none}.container{max-width:1200px;margin:0 auto;padding:24px}
-.header{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}.logo{font-weight:800;letter-spacing:.3px}
-.header .actions{display:flex;gap:10px;flex-wrap:wrap}.header .actions a,.btn{display:inline-block;padding:12px 18px;border-radius:14px;border:1px solid #2a3246;background:#121826;color:#e6e8ee;transition:all .2s;font-size:16px}
-h1,h2,h3{margin:16px 0 8px}.subtle{color:#9aa4b2;font-size:14px}
-.card{background:linear-gradient(180deg,#0f1422,#0b0f1a);border:1px solid #253048;border-radius:18px;padding:16px;display:flex;flex-direction:column;min-height:220px}
-.grid{display:grid;gap:16px}.grid.timetable{grid-template-columns:repeat(3,1fr)}
-.kv{display:flex;flex-wrap:wrap;gap:8px 10px;font-size:14px;color:#cbd5e1}.badge{font-size:12px;padding:4px 8px;background:#12233d;border:1px solid #2a4778;border-radius:999px;color:#cfe1ff}
-.sessions{margin:8px 0;display:flex;flex-wrap:wrap;gap:6px}.session{font-size:12px;padding:4px 8px;border-radius:999px;background:#132236;border:1px dashed #2a4778}
-.cta{margin-top:auto;display:flex;justify-content:space-between;align-items:center;gap:12px}.price{font-size:14px;color:#cbd5e1}.btn.primary{background:#1a3a8a;border-color:#3154a5}
-.toolbar{display:flex;gap:12px;align-items:flex-end;margin:12px 0 20px;flex-wrap:wrap}label{font-size:15px;color:#cbd5e1;display:block}
-select,input,textarea{width:260px;padding:12px 14px;border-radius:14px;border:1px solid #2c3448;background:#0e1422;color:#e6e8ee;font-size:16px}
-select.wide{width:320px}.form{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.form .full{grid-column:1/-1}
-.footer{margin-top:32px;color:#97a3b6;font-size:13px;text-align:center}.gate{display:grid;gap:12px;place-items:center;padding:48px 16px}
-.tel{font-size:28px;display:block;margin:6px 0}.ltr{direction:ltr;unicode-bidi:bidi-override}
-@media (max-width:980px){.grid.timetable{grid-template-columns:repeat(2,1fr)}}
-@media (max-width:640px){.grid.timetable{grid-template-columns:1fr}}
-@media (max-width:540px){.container{padding:16px}h1{font-size:1.6rem}.toolbar{flex-direction:column;align-items:stretch}select,input,textarea,select.wide{width:100%}.cta{flex-direction:column;align-items:stretch}.btn.primary{width:100%;text-align:center}.card{min-height:180px}}
-</style>
+  <title>אדמין — רישום חוגים</title>
   <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-<div class="container" id="adminRoot"><div class="header"><div class="logo"><a href="index.html">מועדון השחמט — אדמין</a></div><div class="actions"><a href="index.html">חזרה</a></div></div><div id="gate" class="gate"><h2>התחברות לאדמין</h2><label>סיסמה
-<input id="pwd" type="password" placeholder="123456 (דמו)"></label><button id="unlockBtn" class="btn primary">כניסה</button><div id="gateMsg" class="subtle"></div></div><div id="adminContent" style="display:none;"><h1>רשימת נרשמים</h1><div class="card"><table id="adminTable" class="table"><thead><tr><th>תאריך</th><th>תלמיד/ה</th><th>חוג</th><th>אפשרות</th><th>טלפון</th><th>אימייל</th><th>סטטוס</th></tr></thead><tbody></tbody></table><div class="subtle" style="margin-top:8px;">הדגמה. בגרסה החיה יתווסף סינון לפי חוג וייצוא CSV.</div></div></div></div><script defer src="script.js"></script>
+<body class="light">
+  <div class="container">
+    <div class="header">
+      <div class="logo"><a href="index.html">מועדון השחמט ראשון לציון</a></div>
+      <div class="actions"><a href="index.html" class="btn">חזרה</a></div>
+    </div>
+
+    <h1>אדמין — רישום חוגים</h1>
+    <div class="subtle" style="margin-bottom:8px">התחברו לניהול הרשמות, עדכון סטטוסי תשלום וחיפוש חופשי.</div>
+
+    <!-- שער כניסה -->
+    <div id="gate" class="card" style="display:grid;place-items:center;gap:12px;height:55vh; margin-top:10px">
+      <div style="width:min(460px,100%);text-align:center">
+        <h2>התחברות לאדמין</h2>
+        <input id="adminPass" type="password" class="input" placeholder="סיסמת אדמין" style="margin-bottom:8px">
+        <button class="btn primary" id="enterBtn" style="width:auto">כניסה</button>
+        <div id="gateMsg" class="subtle" style="margin-top:8px"></div>
+      </div>
+    </div>
+
+    <!-- תוכן אדמין -->
+    <div id="content" class="card" style="display:none">
+      <div class="toolbar">
+        <input id="q" class="search" placeholder="חפש לפי שם/טלפון/אימייל/כיתה/סטטוס...">
+        <button id="refreshBtn" class="btn">רענן</button>
+      </div>
+      <div class="subtle" id="countLine" style="margin-bottom:8px"></div>
+      <div style="overflow:auto">
+        <table id="tbl">
+          <thead>
+          <tr>
+            <th>חוג</th>
+            <th>שם מלא</th>
+            <th>אופציה</th>
+            <th>סטטוס</th>
+            <th>נוצר</th>
+            <th>פעולות</th>
+          </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+<script>
+(function(){
+  const state={key:'',data:[],filtered:[]};
+  const $=s=>document.querySelector(s);
+  const tbody=()=>$('#tbl tbody');
+
+  const mapOpt=v=>{
+    const t=String(v||'').toLowerCase();
+    if(t==='both') return 'שני הימים';
+    if(t==='day1') return 'יום שני';
+    if(t==='day2') return 'יום רביעי';
+    if(t==='single') return 'יום אחד';
+    return v||'';
+  };
+  const badge=st=>{
+    const cls = st==='paid' ? 'st-paid' : (st==='failed'||st==='canceled') ? 'st-failed' : 'st-pending';
+    const icon = st==='paid' ? '✔️' : (st==='failed'||st==='canceled') ? '❌' : '⏳';
+    return `<span class="status ${cls}">${icon} ${st||'pending'}</span>`;
+  };
+  const fmtDate=iso=>{try{return new Date(iso).toLocaleString('he-IL')}catch(e){return iso||''}};
+
+  async function fetchEnrollments(){
+    const r=await fetch('/api/admin/enrollments',{headers:{'X-Admin-Key':state.key}});
+    if(!r.ok) throw new Error('unauthorized');
+    return r.json();
+  }
+  async function setStatus(id,status){
+    const r=await fetch(`/api/admin/enrollments/${encodeURIComponent(id)}/status`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','X-Admin-Key':state.key},
+      body:JSON.stringify({status})
+    });
+    if(!r.ok) throw new Error('failed');
+    return r.json();
+  }
+
+  function renderTable(){
+    const rows = state.filtered.map(row=>`
+      <tr>
+        <td>${row.class_name||''}</td>
+        <td>${row.full_name||''}</td>
+        <td>${mapOpt(row.selected_option)}</td>
+        <td>${badge(row.payment_status)}</td>
+        <td>${fmtDate(row.created_at)}</td>
+        <td class="row-actions">
+          <button class="btn primary" data-act="paid" data-id="${row.id}">✔️ שולם</button>
+          <button class="btn" data-act="pending" data-id="${row.id}">⏳ ממתין</button>
+          <button class="btn" style="background:#b91c1c;color:#fff;border-color:#7f1d1d" data-act="failed" data-id="${row.id}">❌ נכשל</button>
+        </td>
+      </tr>`).join('');
+    tbody().innerHTML = rows || `<tr><td colspan="6" class="subtle">אין נתונים</td></tr>`;
+    $('#countLine').textContent = `סה״כ: ${state.data.length} | מוצגים: ${state.filtered.length}`;
+  }
+
+  function applyFilter(){
+    const q=($('#q').value||'').trim().toLowerCase();
+    state.filtered = !q ? state.data : state.data.filter(row =>
+      [row.class_name,row.full_name,row.phone,row.email,row.payment_status,mapOpt(row.selected_option)]
+        .filter(Boolean).some(v=>String(v).toLowerCase().includes(q))
+    );
+    renderTable();
+  }
+
+  async function refresh(){
+    try{
+      const data=await fetchEnrollments();
+      state.data=data; state.filtered=data;
+      renderTable();
+      $('#gate').style.display='none';
+      $('#content').style.display='';
+    }catch(e){
+      $('#gateMsg').textContent='סיסמה שגויה או שאין הרשאה.';
+      $('#content').style.display='none';
+      $('#gate').style.display='';
+    }
+  }
+
+  // events
+  $('#enterBtn').addEventListener('click', ()=>{ state.key=$('#adminPass').value||''; refresh(); });
+  $('#q').addEventListener('input', applyFilter);
+  $('#refreshBtn').addEventListener('click', refresh);
+  document.addEventListener('click', async (e)=>{
+    const t=e.target.closest('button[data-act]'); if(!t) return;
+    try{
+      await setStatus(t.dataset.id,t.dataset.act);
+      await refresh();
+    }catch(err){ alert('פעולה נכשלה'); }
+  });
+})();
+</script>
 </body>
 </html>
