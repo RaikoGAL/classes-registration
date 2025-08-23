@@ -10,15 +10,31 @@ dotenv.config();
 
 const app = express();
 app.use(cors());
+// הגשה סטטית (אם הקבצים אצלך ב-root אפשר להוסיף גם את השורה הבאה):
+// app.use(express.static('.'));
+// אם אתה מגיש מתוך "public" השאר ככה:
 app.use(express.static('public'));
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 const { Pool } = pg;
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+// אם יש לך DATABASE_URL – נשתמש בו; אחרת ערכי PG* מהסביבה
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  host: process.env.PGHOST || undefined,
+  port: process.env.PGPORT ? Number(process.env.PGPORT) : undefined,
+  database: process.env.PGDATABASE || undefined,
+  user: process.env.PGUSER || undefined,
+  password: process.env.PGPASSWORD || undefined,
+  ssl: process.env.PGSSLMODE ? { rejectUnauthorized: process.env.PGSSLMODE !== 'disable' } : undefined,
+});
+
 const JWT_SECRET = process.env.JWT_SECRET || crypto.randomBytes(32).toString('hex');
 
-// ---------- Auth middleware ----------
+/* ========= Guards ========= */
+
+// Bearer JWT (כפי שהיה)
 function auth(req, res, next) {
   const header = req.headers.authorization || '';
   const token = header.replace('Bearer ', '');
@@ -31,7 +47,37 @@ function auth(req, res, next) {
   }
 }
 
-// ---------- Health ----------
+// Admin guard: מאפשר או X-Admin-Key או JWT
+function adminGuard(req, res, next) {
+  const sent = String(req.headers['x-admin-key'] || '').trim();
+  const expected = String(process.env.ADMIN_KEY || '').trim();
+
+  // נסיון timing-safe (נופל אם אורכים שונים)
+  try {
+    if (expected && sent &&
+        crypto.timingSafeEqual(Buffer.from(sent), Buffer.from(expected))) {
+      return next();
+    }
+  } catch (_) { /* ניפול להשוואה רגילה */ }
+
+  if (expected && sent && sent === expected) return next();
+
+  // תאימות: אם יש JWT תקף – גם טוב
+  const header = req.headers.authorization || '';
+  const token = header.replace('Bearer ', '');
+  try {
+    if (token) {
+      const data = jwt.verify(token, JWT_SECRET);
+      req.user = data;
+      return next();
+    }
+  } catch { /* ignore */ }
+
+  return res.status(401).json({ error: 'unauthorized' });
+}
+
+/* ========= Health ========= */
+
 app.get('/health', async (_req, res) => {
   try {
     await pool.query('SELECT 1');
@@ -41,7 +87,8 @@ app.get('/health', async (_req, res) => {
   }
 });
 
-// ---------- Admin: create user (one-time) ----------
+/* ========= Auth (אופציונלי לניהול באמצעות משתמש/סיסמה) ========= */
+
 app.post('/api/admin/create-user', async (req, res) => {
   const { email, phone, password, role = 'admin' } = req.body || {};
   if (!email || !password) return res.status(400).json({ error: 'email & password required' });
@@ -54,7 +101,6 @@ app.post('/api/admin/create-user', async (req, res) => {
   res.json({ ok: true });
 });
 
-// ---------- Login ----------
 app.post('/api/auth/login', async (req, res) => {
   const { email, password } = req.body || {};
   const r = await pool.query(
@@ -69,7 +115,8 @@ app.post('/api/auth/login', async (req, res) => {
   res.json({ token });
 });
 
-// ---------- Enroll ----------
+/* ========= Enroll ========= */
+
 app.post('/api/enroll', async (req, res) => {
   const { class_id, full_name, email, phone, notes, selected_option } = req.body || {};
   if (!class_id || !full_name) return res.status(400).json({ error: 'missing fields' });
@@ -81,8 +128,10 @@ app.post('/api/enroll', async (req, res) => {
   res.json({ ok: true, enrollId: rows[0].id });
 });
 
-// ---------- Admin list enrollments ----------
-app.get('/api/admin/enrollments', auth, async (_req, res) => {
+/* ========= Admin API ========= */
+
+// רשימת הרשמות — כעת מקבל X-Admin-Key או JWT
+app.get('/api/admin/enrollments', adminGuard, async (_req, res) => {
   const r = await pool.query(
     `SELECT e.id, e.full_name, e.email, e.phone, e.payment_status, e.payment_ref,
             e.selected_option, e.created_at, c.name AS class_name
@@ -93,8 +142,22 @@ app.get('/api/admin/enrollments', auth, async (_req, res) => {
   res.json(r.rows);
 });
 
-// ---------- Admin: manual payment/status ----------
-app.post('/api/admin/mark-paid', auth, async (req, res) => {
+// עדכון סטטוס בנתיב התואם לפרונט: POST /api/admin/enrollments/:id/status
+app.post('/api/admin/enrollments/:id/status', adminGuard, async (req, res) => {
+  const id = Number(req.params.id);
+  const { status, ref } = req.body || {};
+  if (!id || !status) return res.status(400).json({ error: 'missing id/status' });
+  await pool.query(
+    `UPDATE enrollments
+     SET payment_status=$2, payment_ref=COALESCE($3, payment_ref)
+     WHERE id=$1`,
+    [id, status, ref || null]
+  );
+  res.json({ ok: true });
+});
+
+// שימור תאימות לנתיבים הישנים שלך (אם משהו משתמש בהם)
+app.post('/api/admin/mark-paid', adminGuard, async (req, res) => {
   const { id, ref } = req.body || {};
   if (!id) return res.status(400).json({ error: 'missing id' });
   await pool.query(
@@ -106,7 +169,7 @@ app.post('/api/admin/mark-paid', auth, async (req, res) => {
   res.json({ ok: true });
 });
 
-app.post('/api/admin/mark-status', auth, async (req, res) => {
+app.post('/api/admin/mark-status', adminGuard, async (req, res) => {
   const { id, status, ref } = req.body || {};
   if (!id || !status) return res.status(400).json({ error: 'missing id/status' });
   await pool.query(
@@ -117,6 +180,8 @@ app.post('/api/admin/mark-status', auth, async (req, res) => {
   );
   res.json({ ok: true });
 });
+
+/* ========= Start ========= */
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log('listening on', PORT));
