@@ -19,16 +19,26 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 const { Pool } = pg;
-// אם יש לך DATABASE_URL – נשתמש בו; אחרת ערכי PG* מהסביבה
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  host: process.env.PGHOST || undefined,
-  port: process.env.PGPORT ? Number(process.env.PGPORT) : undefined,
-  database: process.env.PGDATABASE || undefined,
-  user: process.env.PGUSER || undefined,
-  password: process.env.PGPASSWORD || undefined,
-  ssl: process.env.PGSSLMODE ? { rejectUnauthorized: process.env.PGSSLMODE !== 'disable' } : undefined,
-});
+
+// שימוש ב-SSL בפרודקשן (Render) בלי אימות CA כדי למנוע SELF_SIGNED_CERT_IN_CHAIN
+const useSSL = !!(process.env.RENDER || process.env.NODE_ENV === 'production');
+
+const pool = new Pool(
+  process.env.DATABASE_URL
+    ? {
+        connectionString: process.env.DATABASE_URL,
+        ssl: useSSL ? { rejectUnauthorized: false } : false,
+      }
+    : {
+        host: process.env.PGHOST,
+        port: process.env.PGPORT ? Number(process.env.PGPORT) : undefined,
+        database: process.env.PGDATABASE,
+        user: process.env.PGUSER,
+        password: process.env.PGPASSWORD,
+        ssl: useSSL ? { rejectUnauthorized: false } : false,
+      }
+);
+
 
 const JWT_SECRET = process.env.JWT_SECRET || crypto.randomBytes(32).toString('hex');
 
