@@ -53,6 +53,14 @@
 
 <script>
 (function(){
+  // אם הדף לא נטען מאותו שרת של ה‑API, נכוון את הקריאות לפרודקשן ב‑Render
+  const isSameOrigin =
+    location.origin.includes('localhost:3000') ||
+    location.origin.includes('127.0.0.1:3000') ||
+    location.origin.includes('classes-registration.onrender.com');
+
+  const API_BASE = isSameOrigin ? '' : 'https://classes-registration.onrender.com';
+
   const state={key:'',data:[],filtered:[]};
   const $=s=>document.querySelector(s);
   const tbody=()=>$('#tbl tbody');
@@ -73,17 +81,23 @@
   const fmtDate=iso=>{try{return new Date(iso).toLocaleString('he-IL')}catch(e){return iso||''}};
 
   async function fetchEnrollments(){
-    const r=await fetch('/api/admin/enrollments',{headers:{'X-Admin-Key':state.key}});
-    if(!r.ok) throw new Error('unauthorized');
+    const r=await fetch(`${API_BASE}/api/admin/enrollments`, { headers:{'X-Admin-Key':state.key} });
+    if(!r.ok){
+      const txt = await r.text().catch(()=> '');
+      throw new Error(`HTTP ${r.status}: ${txt || 'unauthorized'}`);
+    }
     return r.json();
   }
   async function setStatus(id,status){
-    const r=await fetch(`/api/admin/enrollments/${encodeURIComponent(id)}/status`,{
+    const r=await fetch(`${API_BASE}/api/admin/enrollments/${encodeURIComponent(id)}/status`,{
       method:'POST',
       headers:{'Content-Type':'application/json','X-Admin-Key':state.key},
       body:JSON.stringify({status})
     });
-    if(!r.ok) throw new Error('failed');
+    if(!r.ok){
+      const txt = await r.text().catch(()=> '');
+      throw new Error(`HTTP ${r.status}: ${txt || 'failed'}`);
+    }
     return r.json();
   }
 
@@ -121,10 +135,12 @@
       renderTable();
       $('#gate').style.display='none';
       $('#content').style.display='';
+      $('#gateMsg').textContent='';
     }catch(e){
-      $('#gateMsg').textContent='סיסמה שגויה או שאין הרשאה.';
+      $('#gateMsg').textContent='סיסמה שגויה / אין הרשאה (או שה‑API לא נגיש).';
       $('#content').style.display='none';
       $('#gate').style.display='';
+      console.error(e);
     }
   }
 
@@ -134,12 +150,11 @@
   $('#refreshBtn').addEventListener('click', refresh);
   document.addEventListener('click', async (e)=>{
     const t=e.target.closest('button[data-act]'); if(!t) return;
-    try{
-      await setStatus(t.dataset.id,t.dataset.act);
-      await refresh();
-    }catch(err){ alert('פעולה נכשלה'); }
+    try{ await setStatus(t.dataset.id,t.dataset.act); await refresh(); }
+    catch(err){ alert('פעולה נכשלה'); console.error(err); }
   });
 })();
 </script>
+
 </body>
 </html>
