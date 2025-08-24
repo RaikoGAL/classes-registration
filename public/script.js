@@ -1,9 +1,29 @@
-// ===== Rishon Chess Club — data, filters, and rendering for index/register/mobile =====
+// ===== Rishon Chess Club — data, filters, and rendering =====
 (function(global){
-  const $ = (sel, root=document)=>root.querySelector(sel);
-  const $all = (sel, root=document)=>Array.from(root.querySelectorAll(sel));
+  const $  = (sel, root=document)=>root.querySelector(sel);
+  const $$ = (sel, root=document)=>Array.from(root.querySelectorAll(sel));
 
-  // Meshulam mappings (שמור/עדכן לפי החשבונות שלכם)
+  // --- Helpers: "מד כושר" ופורמט מחיר ---
+  const isRatingLike = (txt) => /\d{3,4}\s*[–-]\s*\d{3,4}|^\+?\d{3,4}\+?$/.test(String(txt));
+  const displayLevel = (lvl) => {
+    const t = String(lvl||'').trim();
+    if (isRatingLike(t)) {
+      const normalized = t.replace('-', '–').replace(/\s+/g,'');
+      return `מד כושר ${normalized}`;
+    }
+    return t;
+  };
+  const formatPrice = (p) => {
+    const raw = String(p||'').replace(/\s+/g,'');
+    const m = raw.match(/₪?(\d{2,5})\/₪?(\d{2,5})/);
+    if (!m) return p || '';
+    const one = Math.min(+m[1], +m[2]);
+    const two = Math.max(+m[1], +m[2]);
+    return `יום אחד: ${one}₪ • יומיים: ${two}₪`;
+  };
+  const setEmptyClass = (sel)=> sel && sel.classList.toggle('select-empty', !sel.value);
+
+  // ---- Meshulam links ----
   const M = {
     g1200_day1: "https://meshulam.co.il/purchase?b=28c285802ed7b9e20144601019fd895d",
     g1200_day2: "https://meshulam.co.il/purchase?b=28c285802ed7b9e20144601019fd895d",
@@ -22,6 +42,7 @@
     vitali_mon_1600: "https://meshulam.co.il/purchase?b=cf8f51bfa8f806f245abe3341dd2dfdd"
   };
 
+  // ---- Data ----
   const classGroups = [
     { id:'grp-rated-1200-1400', title:'מדורגים', level:'1200–1400', coach:'גלב קגנסקי', price:'₪235/₪355',
       sessions:[{ day:1, dayName:'שני', time:'16:00–17:30' }, { day:3, dayName:'רביעי', time:'16:00–17:30' }],
@@ -55,41 +76,55 @@
 
   function getQuery(){ const q = new URLSearchParams(location.search); return Object.fromEntries(q.entries()); }
 
+  // ---- Filters ----
   function populateCoachFilter(){
-    const coaches = Array.from(new Set(classGroups.map(g => g.coach))).sort((a,b)=>a.localeCompare(b,'he'));
     const sel = $('#coachSelect'); if(!sel) return;
-    sel.innerHTML = `<option value="all">כל המאמנים</option>` + coaches.map(c=>`<option>${c}</option>`).join('');
+    const coaches = Array.from(new Set(classGroups.map(g => g.coach))).sort((a,b)=>a.localeCompare(b,'he'));
+    sel.innerHTML = `<option value="">בחר מאמן/ת</option><option value="all">כל המאמנים</option>` +
+      coaches.map(c=>`<option value="${c}">${c}</option>`).join('');
+  }
+  function populateLevelFilter(){
+    const sel = $('#levelSelect'); if(!sel) return;
+    const levels = Array.from(new Set(classGroups.map(g => g.level)));
+    sel.innerHTML = `<option value="">בחר רמה</option><option value="all">כל הרמות</option>` +
+      levels.map(l=>`<option value="${l}">${displayLevel(l)}</option>`).join('');
   }
 
   function renderTimetable(){
     const grid = $('#grid'); if (!grid) return;
+    const daySel   = $('#daySelect');
+    const levelSel = $('#levelSelect');
+    const coachSel = $('#coachSelect');
 
-    const daySel = $('#daySelect'), levelSel = $('#levelSelect'), coachSel = $('#coachSelect');
-    const day   = daySel ? daySel.value : 'all';
-    const level = levelSel ? levelSel.value : 'all';
-    const coach = coachSel ? coachSel.value : 'all';
+    // מצב פתיחה/placeholder – אל תציג קלפים עד שיש בחירה כלשהי
+    setEmptyClass(daySel); setEmptyClass(levelSel); setEmptyClass(coachSel);
+    const day   = daySel?.value || '';
+    const level = levelSel?.value || '';
+    const coach = coachSel?.value || '';
 
-    const filtered = classGroups.filter(g => {
-      const hitDay = (day==='all' || g.sessions.some(s => String(s.day) === String(day)));
-      const hitLevel = (level==='all' || g.level.includes(level));
-      const hitCoach = (coach==='all' || g.coach === coach);
+    if (!day && !level && !coach) { grid.innerHTML = ''; return; }
+
+    const filtered = classGroups.filter(g=>{
+      const hitDay   = (!day   || day==='all'   || g.sessions.some(s=>String(s.day)===String(day)));
+      const hitLevel = (!level || level==='all' || g.level === level);
+      const hitCoach = (!coach || coach==='all' || g.coach === coach);
       return hitDay && hitLevel && hitCoach;
     });
 
-    grid.innerHTML = '';
-    filtered.forEach(g => {
+    grid.innerHTML='';
+    filtered.forEach(g=>{
       const card = document.createElement('div');
-      card.className = 'card';
-      const sessions = g.sessions.map(s => `<span class="session">${s.dayName} • ${s.time}</span>`).join('');
+      card.className='card';
+      const sessions = g.sessions.map(s=>`<span class="session">${s.dayName} • ${s.time}</span>`).join('');
       card.innerHTML = `
         <div class="kv">
-          <div>${g.level}</div>
+          <div>${displayLevel(g.level)}</div>
           <div>${g.coach}</div>
         </div>
         <h3>${g.title}</h3>
         <div class="sessions">${sessions}</div>
         <div class="cta">
-          <div class="price">${g.price}</div>
+          <div class="price">${formatPrice(g.price)}</div>
           <a class="btn primary" href="register.html?groupId=${encodeURIComponent(g.id)}">להרשמה</a>
         </div>`;
       grid.appendChild(card);
@@ -99,9 +134,12 @@
   function initIndex(){
     if (!$('#grid')) return;
     populateCoachFilter();
+    populateLevelFilter();
     ['daySelect','levelSelect','coachSelect'].forEach(id=>{
-      const el = $('#'+id); el && el.addEventListener('change', renderTimetable);
+      const el = $('#'+id);
+      if(el){ setEmptyClass(el); el.addEventListener('change', ()=>{ setEmptyClass(el); renderTimetable(); }); }
     });
+    // פתיחה: הכל ריק → אין קלפים
     renderTimetable();
   }
 
@@ -111,16 +149,13 @@
     const grp = classGroups.find(g => g.id === groupId);
     if (!grp) return;
     $('#classTitle').textContent = grp.title;
-    $('#classMeta').textContent = `${grp.level} • מאמן/ת: ${grp.coach}`;
+    $('#classMeta').textContent  = `${displayLevel(grp.level)} • מאמן/ת: ${grp.coach}`;
   }
 
-  // Expose for payments.js
+  // חשיפה ל-payments.js
   global.RCC = { classGroups, M };
 
-  // Boot
   if (document.readyState==='loading'){
     document.addEventListener('DOMContentLoaded', ()=>{ initIndex(); initRegisterMeta(); });
-  }else{
-    initIndex(); initRegisterMeta();
-  }
+  } else { initIndex(); initRegisterMeta(); }
 })(window);
