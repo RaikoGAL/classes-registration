@@ -1,61 +1,26 @@
-<!doctype html>
-<html lang="he">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>מערכת חוגים — ראשון לציון</title>
-  <link rel="stylesheet" href="styles.css">
-</head>
-<body class="light">
-  <div class="container">
-    <div class="header">
-      <div class="logo"><a href="index.html">מועדון השחמט ראשון לציון</a></div>
-      <div class="actions">
-        <a class="btn" href="admin.html">אדמין</a>
-        <a class="btn" href="contact.html">צור קשר</a>
-      </div>
-    </div>
+<div class="toolbar">
+  <label>יום
+    <select id="daySelect" class="wide select-empty">
+      <option value="">בחר יום</option>
+      <option value="all">כל הימים</option>
+      <option value="0">א'</option><option value="1">ב'</option><option value="2">ג'</option>
+      <option value="3">ד'</option><option value="4">ה'</option><option value="5">ו'</option><option value="6">ש'</option>
+    </select>
+  </label>
 
-    <h1>מערכת חוגים — הרשמה בלחיצה</h1>
-    <div class="subtle">בחרו יום/מאמן/רמה ולחצו על "להרשמה"</div>
+  <label>רמה
+    <select id="levelSelect" class="wide select-empty">
+      <option value="">בחר רמה</option>
+      <option value="all">כל הרמות</option>
+      <!-- הערכים יוזנו מחדש ע"י script.js עם “מד כושר …” -->
+    </select>
+  </label>
 
-    <div class="toolbar">
-      <label>יום
-        <select id="daySelect" class="wide">
-          <option value="all">כל הימים</option>
-          <option value="0">א'</option><option value="1">ב'</option><option value="2">ג'</option>
-          <option value="3">ד'</option><option value="4">ה'</option><option value="5">ו'</option><option value="6">ש'</option>
-        </select>
-      </label>
-      <label>רמה
-        <select id="levelSelect" class="wide">
-          <option value="all">כל הרמות</option>
-          <option value="גן–א׳">גן–א׳</option>
-          <option value="בנות">בנות</option>
-          <option value="1200">1200–1400</option>
-          <option value="1400">1400–1600</option>
-          <option value="1600">1600–1800</option>
-          <option value="מבוגרים">מבוגרים</option>
-          <option value="+1900">+1900</option>
-        </select>
-      </label>
-      <label>מאמן/ת
-        <select id="coachSelect" class="wide">
-          <option value="all">כל המאמנים</option>
-        </select>
-      </label>
-    </div>
-
-    <div id="grid" class="grid timetable"></div>
-
-    <footer class="site-footer">
-      <div class="grid">
-        <div><strong>מועדון השחמט ראשון לציון</strong> — כל הזכויות שמורות · <a href="contact.html">צור קשר</a></div>
-        <div><a href="tel:+972529257642">052‑9257642</a> · <a href="mailto:rishonchess@gmail.com">rishonchess@gmail.com</a></div>
-      </div>
-    </footer>
-  </div>
-
-  <script src="script.js" defer></script>
-</body>
-</html>
+  <label>מאמן/ת
+    <select id="coachSelect" class="wide select-empty">
+      <option value="">בחר מאמן/ת</option>
+      <option value="all">כל המאמנים</option>
+      <!-- יוזן אוטומטית -->
+    </select>
+  </label>
+</div>
