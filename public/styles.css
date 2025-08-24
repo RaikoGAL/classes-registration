@@ -133,3 +133,34 @@ thead th{ background:#f8fafc; color:#1f2937; text-align:right; white-space:nowra
   .page-register .form{ grid-template-columns:1fr; }
   #meetingOption{ width:100%; min-width:0; }
 }
+/* ===== Sticky footer on all pages ===== */
+.container{
+  min-height:100vh;           /* גובה מסך מלא */
+  display:flex;               /* כדי לדחוף את הפוטר למטה */
+  flex-direction:column;
+}
+.site-footer{ margin-top:auto; }  /* דוחף את הפוטר לתחתית */
+
+/* ===== Phone numbers always LTR (גם בלינקים) ===== */
+a[href^="tel:"], .ltr{
+  direction:ltr;
+  unicode-bidi:bidi-override;
+}
+
+/* ===== Enlarge cards slightly (more spacious) ===== */
+.grid.timetable{ gap:22px; }          /* יותר ריווח בין הקלפים */
+.card{
+  padding:28px;                        /* יותר ריווח פנימי */
+  min-height:280px;                    /* טיפה יותר גבוה */
+}
+.kv > *{
+  padding:8px 12px;
+  font-size:17px;
+}
+.sessions > *{
+  padding:8px 12px;
+  font-size:16px;
+}
+.price{ font-size:18px; }              /* מחירים טיפה גדולים יותר */
+
+/* מובייל נשאר אותו הדבר — אין צורך לשנות את ה‑@media הקיים אצלך */
