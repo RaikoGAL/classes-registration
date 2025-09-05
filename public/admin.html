@@ -6,7 +6,7 @@
   <title>אדמין — רישום חוגים</title>
   <link rel="stylesheet" href="styles.css">
 </head>
-<body class="light">
+<body class="light page-admin">
   <div class="container">
     <div class="header">
       <div class="logo"><a href="index.html">מועדון השחמט ראשון לציון</a></div>
@@ -16,8 +16,8 @@
     <h1>אדמין — רישום חוגים</h1>
     <div class="subtle" style="margin-bottom:8px">התחברו לניהול הרשמות, עדכון סטטוסי תשלום וחיפוש חופשי.</div>
 
-    <!-- שער כניסה (נשאר קבוע במקומו; בהצלחה רק מסתירים ב-visibility) -->
-    <div id="gate" class="card" style="display:grid;place-items:center;gap:12px;height:55vh;margin-top:10px">
+    <!-- שער כניסה -->
+    <div id="gate" class="card" style="display:grid;place-items:center;gap:12px;margin-top:10px">
       <div style="width:min(460px,100%);text-align:center">
         <h2>התחברות לאדמין</h2>
         <input id="adminPass" type="password" class="input" placeholder="סיסמת אדמין" style="margin-bottom:8px">
@@ -36,14 +36,14 @@
       <div style="overflow:auto">
         <table id="tbl">
           <thead>
-          <tr>
-            <th>חוג</th>
-            <th>שם מלא</th>
-            <th>אופציה</th>
-            <th>סטטוס</th>
-            <th>נוצר</th>
-            <th>פעולות</th>
-          </tr>
+            <tr>
+              <th>חוג</th>
+              <th>שם מלא</th>
+              <th>אופציה</th>
+              <th>סטטוס</th>
+              <th>נוצר</th>
+              <th>פעולות</th>
+            </tr>
           </thead>
           <tbody></tbody>
         </table>
@@ -119,6 +119,32 @@
     $('#countLine').textContent = `סה״כ: ${state.data.length} | מוצגים: ${state.filtered.length}`;
   }
 
+  async function refresh(){
+    const gate = $('#gate');
+    try{
+      const data=await fetchEnrollments();
+      state.data=data; state.filtered=data;
+      renderTable();
+
+      // בהצלחה — הסתרה מלאה (ללא שמירת מקום)
+      gate.style.display='none';
+      $('#content').style.display='';
+      $('#gateMsg').textContent='';
+    }catch(e){
+      // בשגיאה — מציגים את שער הכניסה
+      gate.style.display='grid';
+      $('#content').style.display='none';
+      $('#gateMsg').textContent='סיסמה שגויה / אין הרשאה (או שה-API לא נגיש).';
+      console.error(e);
+    }
+  }
+
+  // events
+  $('#enterBtn').addEventListener('click', ()=>{ state.key=$('#adminPass').value||''; refresh(); });
+  $('#adminPass').addEventListener('keydown', (ev)=>{ if(ev.key==='Enter'){ $('#enterBtn').click(); } });
+  $('#q').addEventListener('input', applyFilter);
+  $('#refreshBtn').addEventListener('click', refresh);
+
   function applyFilter(){
     const q=($('#q').value||'').trim().toLowerCase();
     state.filtered = !q ? state.data : state.data.filter(row =>
@@ -128,37 +154,6 @@
     renderTable();
   }
 
-  async function refresh(){
-    const gate = $('#gate');
-    try{
-      const data=await fetchEnrollments();
-      state.data=data; state.filtered=data;
-      renderTable();
-
-      // שמירת בלוק השער בגובהו: הסתרה ב-visibility בלבד
-      gate.style.visibility='hidden';
-      gate.setAttribute('aria-hidden','true');
-
-      $('#content').style.display='';
-      $('#gateMsg').textContent='';
-    }catch(e){
-      // במצב שגיאה: השער נשאר נראה, הטקסט מתעדכן; ה-layout לא משתנה
-      gate.style.visibility='visible';
-      gate.removeAttribute('aria-hidden');
-
-      $('#content').style.display='none';
-      $('#gateMsg').textContent='סיסמה שגויה / אין הרשאה (או שה-API לא נגיש).';
-      console.error(e);
-    }
-  }
-
-  // events
-  $('#enterBtn').addEventListener('click', ()=>{ state.key=$('#adminPass').value||''; refresh(); });
-  // כניסה גם עם Enter בשדה הסיסמה
-  $('#adminPass').addEventListener('keydown', (ev)=>{ if(ev.key==='Enter'){ $('#enterBtn').click(); } });
-
-  $('#q').addEventListener('input', applyFilter);
-  $('#refreshBtn').addEventListener('click', refresh);
   document.addEventListener('click', async (e)=>{
     const t=e.target.closest('button[data-act]'); if(!t) return;
     try{ await setStatus(t.dataset.id,t.dataset.act); await refresh(); }
@@ -166,6 +161,5 @@
   });
 })();
 </script>
-
 </body>
 </html>
