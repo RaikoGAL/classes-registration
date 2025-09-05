@@ -50,49 +50,73 @@
     </div>
   </div>
 
-  <script src="script.js"></script>
-  <script src="payments.js"></script>
-  <script>
-  (function(){
-    // קבלת groupId מה-URL ושמירה לשדה חבוי
-    const sp=new URL(location.href).searchParams;
-    const g=sp.get('group')||sp.get('groupId')||'';
-    if(g){ document.body.dataset.group=g; const h=document.getElementById('groupKey'); if(h) h.value=g; }
+<script src="script.js"></script>
+<script src="payments.js"></script>
+<script>
+(function(){
+  const sp=new URL(location.href).searchParams;
+  const g=sp.get('group')||sp.get('groupId')||'';
+  if(g){ document.body.dataset.group=g; const h=document.getElementById('groupKey'); if(h) h.value=g; }
 
-    // עדכון סכום לפי בחירה (ברירת מחדל 0₪)
-    const PRICE_ONE=235, PRICE_BOTH=355;
-    const sel=document.getElementById('meetingOption');
-    const pay=document.getElementById('paybarAmount');
-    const sessions=document.getElementById('sessionsList');
+  const sel=document.getElementById('meetingOption');
+  const pay=document.getElementById('paybarAmount');
+  const sessions=document.getElementById('sessionsList');
 
-    function amountFor(v){ if(v==='both')return PRICE_BOTH; if(v==='day1'||v==='day2')return PRICE_ONE; return 0; }
-    function update(){ pay.textContent = amountFor(sel.value) + '₪'; }
-    if(sel&&pay){ update(); sel.addEventListener('change', ()=>{ sel.dataset.userSelected='1'; update(); }); }
+  function getGrp(){ return window.RCC?.classGroups?.find(x=>x.id === (document.body.dataset.group||'')); }
+  function hasTwoSessions(grp){ return Array.isArray(grp?.sessions) && grp.sessions.length >= 2; }
+  function parsePrice(p){ // מקבל "₪235/₪355" או "₪195"
+    const raw = String(p||'').replace(/\s+/g,'');
+    const m = raw.match(/₪?(\d{2,5})\/₪?(\d{2,5})/);
+    if(m){ return { one: Math.min(+m[1],+m[2]), both: Math.max(+m[1],+m[2]) }; }
+    const m2 = raw.match(/₪?(\d{2,5})$/);
+    if(m2){ return { one:+m2[1], both:null }; }
+    return { one:0, both:null };
+  }
 
-    // הצגת קפסולות שעות מתוך הנתונים שב-script.js
-    function renderSessions(){
-      const groupId = document.body.dataset.group || '';
-      const grp = window.RCC?.classGroups?.find(x=>x.id===groupId);
-      sessions.innerHTML = grp
-        ? grp.sessions.map(s=>`<span class="session">${s.dayName} • ${s.time}</span>`).join('')
-        : '';
-      // אם לא בחר ידנית — לא לבחור אוטומטית
-      if(!sel.dataset.userSelected) sel.value='';
-      update();
+  function renderSessions(){
+    const grp = getGrp(); if(!grp) return;
+    document.getElementById('classTitle').textContent = grp.title;
+    document.getElementById('classMeta').textContent  = `מד כושר ${String(grp.level).replace('-', '–')} • מאמן/ת: ${grp.coach}`;
+
+    sessions.innerHTML = grp.sessions.map(s=>`<span class="session">${s.dayName} • ${s.time}</span>`).join('');
+
+    const price = parsePrice(grp.price);
+
+    if(hasTwoSessions(grp)){
+      // השאר את הבחירה גלויה ודרוש בחירה ידנית
+      sel.value = '';
+      sel.parentElement.style.display = '';
+      pay.textContent = '0₪';
+    }else{
+      // חוג חד-יומי: הסתר בחירה, קבע option='single', הצג מחיר
+      sel.value = 'single';
+      sel.parentElement.style.display = 'none';
+      pay.textContent = (price.one||0) + '₪';
     }
-    renderSessions();
+  }
 
-    // Guard: למנוע תשלום בלי בחירה
-    document.getElementById('payBtn').addEventListener('click', (e)=>{
-      if(!sel.value){ alert('נא לבחור ימי מפגש לפני מעבר לתשלום'); sel.focus(); return; }
-      window.guardAndPay?.(e);
-    });
+  function updateAmount(){
+    const grp = getGrp(); if(!grp) return;
+    const price = parsePrice(grp.price);
+    const v = sel.value;
+    const amount = v==='both' ? (price.both||0) : v ? (price.one||0) : 0;
+    pay.textContent = amount + '₪';
+  }
 
-    // מניעת דאבל-אינסרט בחזרה מהתשלום
-    window.addEventListener('pageshow', (e)=>{
-      if(e.persisted){ location.reload(); }
-    });
-  })();
-  </script>
+  if(sel && pay){
+    sel.addEventListener('change', ()=>{ sel.dataset.userSelected='1'; updateAmount(); });
+  }
+
+  renderSessions();
+  updateAmount();
+
+  // Guard + תשלום
+  document.getElementById('payBtn').addEventListener('click', (e)=>{ window.guardAndPay(e); });
+
+  // מניעת דאבל-אינסרט בחזרה מהתשלום
+  window.addEventListener('pageshow', (e)=>{ if(e.persisted){ location.reload(); } });
+})();
+</script>
+
 </body>
 </html>
