@@ -54,15 +54,11 @@ function adminGuard(req, res, next) {
   const expected = String(process.env.ADMIN_KEY || "").trim();
 
   try {
-    if (
-      expected &&
-      sent &&
-      crypto.timingSafeEqual(Buffer.from(sent), Buffer.from(expected))
-    ) {
+    if (expected && sent && crypto.timingSafeEqual(Buffer.from(sent), Buffer.from(expected))) {
       return next();
     }
-  } catch (_) {
-    /* fall through */
+  } catch {
+    // fall through
   }
 
   if (expected && sent && sent === expected) return next();
@@ -76,7 +72,7 @@ function adminGuard(req, res, next) {
       return next();
     }
   } catch {
-    /* ignore */
+    // ignore
   }
 
   return res.status(401).json({ error: "unauthorized" });
@@ -159,11 +155,18 @@ app.post("/api/enroll", async (req, res) => {
 
 app.get("/api/admin/enrollments", adminGuard, async (_req, res) => {
   const r = await pool.query(
-    `SELECT e.id, e.full_name, e.email, e.phone, e.payment_status, e.payment_ref,
-            e.selected_option, e.created_at,
-            COALESCE(c.name, e.class_id) AS class_name
+    `SELECT e.id,
+            e.full_name,
+            e.email,
+            e.phone,
+            e.payment_status,
+            e.payment_ref,
+            e.selected_option,
+            e.created_at,
+            COALESCE(c.name, e.class_id::text) AS class_name
      FROM enrollments e
-     LEFT JOIN classes c ON CAST(e.class_id AS text) = CAST(c.id AS text)
+     LEFT JOIN classes c
+       ON CAST(e.class_id AS text) = CAST(c.id AS text)
      ORDER BY e.created_at DESC NULLS LAST, e.id DESC`
   );
   res.json(r.rows);
