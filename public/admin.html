@@ -16,8 +16,8 @@
     <h1>אדמין — רישום חוגים</h1>
     <div class="subtle" style="margin-bottom:8px">התחברו לניהול הרשמות, עדכון סטטוסי תשלום וחיפוש חופשי.</div>
 
-    <!-- שער כניסה -->
-    <div id="gate" class="card" style="display:grid;place-items:center;gap:12px;height:55vh; margin-top:10px">
+    <!-- שער כניסה (נשאר קבוע במקומו; בהצלחה רק מסתירים ב-visibility) -->
+    <div id="gate" class="card" style="display:grid;place-items:center;gap:12px;height:55vh;margin-top:10px">
       <div style="width:min(460px,100%);text-align:center">
         <h2>התחברות לאדמין</h2>
         <input id="adminPass" type="password" class="input" placeholder="סיסמת אדמין" style="margin-bottom:8px">
@@ -53,7 +53,7 @@
 
 <script>
 (function(){
-  // אם הדף לא נטען מאותו שרת של ה‑API, נכוון את הקריאות לפרודקשן ב‑Render
+  // אם הדף לא נטען מאותו שרת של ה-API, נכוון את הקריאות לפרודקשן ב-Render
   const isSameOrigin =
     location.origin.includes('localhost:3000') ||
     location.origin.includes('127.0.0.1:3000') ||
@@ -129,23 +129,34 @@
   }
 
   async function refresh(){
+    const gate = $('#gate');
     try{
       const data=await fetchEnrollments();
       state.data=data; state.filtered=data;
       renderTable();
-      $('#gate').style.display='none';
+
+      // שמירת בלוק השער בגובהו: הסתרה ב-visibility בלבד
+      gate.style.visibility='hidden';
+      gate.setAttribute('aria-hidden','true');
+
       $('#content').style.display='';
       $('#gateMsg').textContent='';
     }catch(e){
-      $('#gateMsg').textContent='סיסמה שגויה / אין הרשאה (או שה‑API לא נגיש).';
+      // במצב שגיאה: השער נשאר נראה, הטקסט מתעדכן; ה-layout לא משתנה
+      gate.style.visibility='visible';
+      gate.removeAttribute('aria-hidden');
+
       $('#content').style.display='none';
-      $('#gate').style.display='';
+      $('#gateMsg').textContent='סיסמה שגויה / אין הרשאה (או שה-API לא נגיש).';
       console.error(e);
     }
   }
 
   // events
   $('#enterBtn').addEventListener('click', ()=>{ state.key=$('#adminPass').value||''; refresh(); });
+  // כניסה גם עם Enter בשדה הסיסמה
+  $('#adminPass').addEventListener('keydown', (ev)=>{ if(ev.key==='Enter'){ $('#enterBtn').click(); } });
+
   $('#q').addEventListener('input', applyFilter);
   $('#refreshBtn').addEventListener('click', refresh);
   document.addEventListener('click', async (e)=>{
