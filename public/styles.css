@@ -164,3 +164,15 @@ a[href^="tel:"], .ltr{
 .price{ font-size:18px; }              /* מחירים טיפה גדולים יותר */
 
 /* מובייל נשאר אותו הדבר — אין צורך לשנות את ה‑@media הקיים אצלך */
+
+/* ===== Admin page layout fix: אל תשתמש ב-flex של ה-container כדי למנוע gap ===== */
+.page-admin .container{
+  display:block;      /* מבטל את flex מה-sticky footer הגלובלי */
+  min-height:auto;    /* אין אילוץ לגובה מסך */
+}
+
+/* ריווח עדין לשער/תוכן */
+.page-admin #gate,
+.page-admin #content{
+  margin-top:14px;
+}
