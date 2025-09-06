@@ -9,7 +9,10 @@
 <body class="page-register light">
   <div class="container">
     <div class="header">
-      <div class="logo"><a href="index.html">מועדון השחמט ראשון לציון</a></div>
+      <div  class="logo">
+        <img width="55px" src="/images/logo.png"></img>
+        <div><a href="index.html">הרשמה לחוגים</a></div>
+      </div>
       <div class="actions"><a href="index.html" class="btn" aria-label="חזרה">חזרה</a></div>
     </div>
 
@@ -57,6 +60,7 @@
   const sp=new URL(location.href).searchParams;
   const g=sp.get('group')||sp.get('groupId')||'';
   if(g){ document.body.dataset.group=g; const h=document.getElementById('groupKey'); if(h) h.value=g; }
+  
 
   const sel=document.getElementById('meetingOption');
   const pay=document.getElementById('paybarAmount');
@@ -82,6 +86,9 @@
 
     const price = parsePrice(grp.price);
 
+    console.log('Group:', grp, 'Parsed price:', price);
+    
+
     if(hasTwoSessions(grp)){
       // השאר את הבחירה גלויה ודרוש בחירה ידנית
       sel.value = '';
@@ -101,6 +108,12 @@
     const v = sel.value;
     const amount = v==='both' ? (price.both||0) : v ? (price.one||0) : 0;
     pay.textContent = amount + '₪';
+
+    if(!hasTwoSessions(grp)
+    ){
+      pay.textContent = (price.one||0) + '₪';
+    }
+    
   }
 
   if(sel && pay){
