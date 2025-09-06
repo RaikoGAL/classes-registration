@@ -77,7 +77,7 @@ select,input,textarea{
 }
 
 .toolbar{ display:flex; gap:12px; align-items:flex-end; margin:12px 0 20px; flex-wrap:wrap; }
-.toolbar label{ color:var(--ink); font-weight:700; font-size:16px; display:block; }
+.toolbar label{ color:var(--ink); font-weight:700; font-size:18px; display:block; }
 /* חץ ברור לשדות בחירה */
 .toolbar select{
   padding-right:14px; padding-left:40px;

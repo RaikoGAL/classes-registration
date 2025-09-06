@@ -9,10 +9,26 @@ import cors from "cors";
 dotenv.config();
 
 const app = express();
-app.use(cors());
+// app.use(cors());
 app.use(express.static("public"));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
+app.use((req, res, next) => {
+  res.setHeader(
+    'Content-Security-Policy',
+    "default-src 'self'; " +
+    "script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; " +
+    "style-src 'self' 'unsafe-inline'; " +
+    "img-src 'self' data: https:; " +
+    "connect-src 'self'; " +
+    "font-src 'self' data:; " +
+    "frame-ancestors 'none'; " +
+    "base-uri 'self';"
+  );
+  next();
+});
+
 
 const { Pool } = pg;
 

@@ -1,4 +1,10 @@
 // ===== Rishon Chess Club — registration save + redirect to Meshulam =====
+const isSameOrigin =
+    location.origin.includes('localhost:3000') ||
+    location.origin.includes('127.0.0.1:3000') ||
+    location.origin.includes('classes-registration.onrender.com');
+  const API_BASE = isSameOrigin ? '' : 'https://classes-registration.onrender.com';
+
 function isValidPhone(value){
   const v = String(value||'').replace(/[^\d+]/g,'');
   // תומך ב-05XXXXXXXX וב-+9725XXXXXXX
@@ -46,9 +52,13 @@ async function guardAndPay(e){
 
   // 3) ניסיון שמירה בצד שרת (נשתמש ב-/api/register שתואם לפורמט הזה)
   try{
-    const r = await fetch('/api/register', {
+    console.log("gdfgfdhfd");
+    
+    const r = await fetch(`/api/enroll`, {
       method:'POST',
       headers:{'Content-Type':'application/json'},
+      credentials: 'same-origin',
+      allowedHeaders: ['Content-Type', 'Authorization'],
       body:JSON.stringify({
         groupId,
         selected_option: option,
