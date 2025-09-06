@@ -1,90 +1,163 @@
 <!-- ==== Coaches / Instructors strip ==== -->
 <section class="instructors">
   <style>
-    .instructors{ margin:0px 0 10px }
-    .instructors h2{ text-align:center; margin-bottom:20px }
-    .inst-list{ display:grid; gap:22px; list-style:none; padding:0; margin:0 }
-    .inst{
-      display:grid; grid-template-columns:120px 1fr; align-items:center; gap:18px;
-      font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,"Noto Sans Hebrew","Rubik",sans-serif;
+    .instructors {
+      margin: 0px 0 10px;
     }
-    .inst-avatar{
-      width:120px; height:120px; border-radius:999px; object-fit:cover;
-      box-shadow:0 6px 18px rgba(15,23,42,.12);
+    .instructors h2 {
+      text-align: center;
+      margin-bottom: 20px;
     }
-    .inst-ribbon{
-      --r:#e2e8f0; /* ברירת מחדל אם לא הוגדר צבע */
-      background:var(--r);
-      color:#fff; border-radius:32px; padding:18px 26px;
-      display:flex; flex-direction:column; justify-content:center; min-height:82px;
+    .inst-list {
+      display: grid;
+      gap: 22px;
+      list-style: none;
+      padding: 0;
+      margin: 0;
     }
-    .inst-name{ font-weight:800; text-align:center; font-size:22px }
-    .inst-desc{ text-align:center; margin-top:6px; line-height:1.5 }
-    .inst-phone{ text-align:center; margin-top:4px; font-weight:700 }
-    .inst-phone a{ color:#fff; text-decoration:none }
-    .inst-phone a:hover{ text-decoration:underline }
+    .inst {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      align-items: center;
+      gap: 18px;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial,
+        "Noto Sans Hebrew", "Rubik", sans-serif;
+    }
+    .inst-avatar {
+      width: 120px;
+      height: 120px;
+      border-radius: 999px;
+      object-fit: cover;
+      box-shadow: 0 6px 18px rgba(15, 23, 42, 0.12);
+    }
+    .inst-ribbon {
+      --r: #e2e8f0; /* ברירת מחדל אם לא הוגדר צבע */
+      background: var(--r);
+      color: #fff;
+      border-radius: 32px;
+      padding: 18px 26px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 82px;
+    }
+    .inst-name {
+      font-weight: 800;
+      text-align: center;
+      font-size: 22px;
+    }
+    .inst-desc {
+      text-align: center;
+      margin-top: 6px;
+      line-height: 1.5;
+    }
+    .inst-phone {
+      text-align: center;
+      margin-top: 4px;
+      font-weight: 700;
+    }
+    .inst-phone a {
+      color: #fff;
+      text-decoration: none;
+    }
+    .inst-phone a:hover {
+      text-decoration: underline;
+    }
 
     /* מובייל */
-    @media (max-width:640px){
-      .inst{ grid-template-columns:80px 1fr; gap:12px }
-      .inst-avatar{ width:80px; height:80px }
-      .inst-ribbon{ border-radius:24px; padding:14px 16px }
+    @media (max-width: 640px) {
+      .inst {
+        grid-template-columns: 80px 1fr;
+        gap: 12px;
+      }
+      .inst-avatar {
+        width: 80px;
+        height: 80px;
+      }
+      .inst-ribbon {
+        border-radius: 24px;
+        padding: 14px 16px;
+      }
     }
-    h1{ font-size:clamp(30px,4vw,42px); margin:0px 0 35px;}
+    h1 {
+      font-size: clamp(30px, 4vw, 42px);
+      margin: 0px 0 35px;
+    }
   </style>
 
   <h1>נבחרת המדריכים שלנו</h1>
 
-
-
   <ul class="inst-list">
     <!-- פריט 1 -->
     <li class="inst">
-      <img class="inst-avatar" src="./images/yaron.png" alt="שם המדריך">
-      <div class="inst-ribbon" style="--r:#e6782d">
+      <img class="inst-avatar" src="./images/yaron.png" alt="שם המדריך" />
+      <div class="inst-ribbon" style="--r: #e6782d">
         <div class="inst-name">ירון ליניק</div>
-        <div class="inst-desc">מדריך במועדון משנת 1998. חניכיו הגיעו לדרגות בין לאומיות.</div>
-        <div class="inst-phone ltr"> <a href="tel:+972507949335">050-7949335</a></div>
+        <div class="inst-desc">
+          מדריך במועדון משנת 1998. חניכיו הגיעו לדרגות בין לאומיות.
+        </div>
+        <div class="inst-phone ltr">
+          <a href="tel:+972507949335">050-7949335</a>
+        </div>
       </div>
     </li>
 
     <!-- פריט 2 -->
     <li class="inst">
-      <img class="inst-avatar" src="./images/gleb.png" alt="שם המדריך">
-      <div class="inst-ribbon" style="--r:#176d2e">
+      <img class="inst-avatar" src="./images/gleb.png" alt="שם המדריך" />
+      <div class="inst-ribbon" style="--r: #176d2e">
         <div class="inst-name">גלב קגנסקי · אמן פידה</div>
-        <div class="inst-desc">בעל ניסיון של מעל 10 שנים בהדרכה. חניכים הגיעו לדירוגים בינלאומיים וזכו באליפויות נוער.</div>
-        <div class="inst-phone ltr"> <a href="tel:+972545817343">054-5817343</a></div>
+        <div class="inst-desc">
+          בעל ניסיון של מעל 10 שנים בהדרכה. חניכים הגיעו לדירוגים בינלאומיים
+          וזכו באליפויות נוער.
+        </div>
+        <div class="inst-phone ltr">
+          <a href="tel:+972545817343">054-5817343</a>
+        </div>
       </div>
     </li>
 
     <!-- פריט 3 -->
     <li class="inst">
-      <img class="inst-avatar" src="./images/maya.png" alt="שם המדריכה">
-      <div class="inst-ribbon" style="--r:#0d88c7">
+      <img class="inst-avatar" src="./images/maya.png" alt="שם המדריכה" />
+      <div class="inst-ribbon" style="--r: #0d88c7">
         <div class="inst-name">מאיה לפושניאן</div>
-        <div class="inst-desc">שחקנית נוער מצטיינת, מאמנת שחמט בעלת גישה מיוחדת לילדים.</div>
-        <div class="inst-phone ltr"> <a href="tel:+972543291449">054-3291449</a></div>
+        <div class="inst-desc">
+          שחקנית נוער מצטיינת, מאמנת שחמט בעלת גישה מיוחדת לילדים.
+        </div>
+        <div class="inst-phone ltr">
+          <a href="tel:+972543291449">054-3291449</a>
+        </div>
       </div>
     </li>
 
     <!-- פריט 4 -->
     <li class="inst">
-      <img class="inst-avatar" src="./images/or.png" alt="שם המדריך">
-      <div class="inst-ribbon" style="--r:#8a2aa9">
+      <img class="inst-avatar" src="./images/or.png" alt="שם המדריך" />
+      <div class="inst-ribbon" style="--r: #8a2aa9">
         <div class="inst-name">אור ברונשטיין · אמן בינלאומי</div>
-        <div class="inst-desc">שחקן מצטיין בליגה לאומית, זוכה תחרויות רבות, בניהן אליפות הארץ לנוער.</div>
-        <div class="inst-phone ltr"> <a href="tel:+972509121410">050-9121410</a></div>
+        <div class="inst-desc">
+          שחקן מצטיין בליגה לאומית, זוכה תחרויות רבות, בניהן אליפות הארץ לנוער.
+        </div>
+        <div class="inst-phone ltr">
+          <a href="tel:+972509121410">050-9121410</a>
+        </div>
       </div>
     </li>
 
     <!-- פריט 5 -->
     <li class="inst">
-      <img class="inst-avatar" src="./images/vitaly.png" alt="שם המדריך">
-      <div class="inst-ribbon" style="--r:#3d8e1f">
+      <img class="inst-avatar" src="./images/vitaly.png" alt="שם המדריך" />
+      <div class="inst-ribbon" style="--r: #3d8e1f">
         <div class="inst-name">ויטאלי גולד · רב אמן בינלאומי</div>
-        <div class="inst-desc">אלוף אוקראינה (1991), אלוף ישראל (2010), קפטן ומאמן נבחרת ישראל לנשים (2006–2013).<br> חניכיו זכו מעל 25 מדליות באלופיות הארץ לנוער.</div>
-        <div class="inst-phone ltr"> <a href="tel:+972545305402">054-5305402</a></div>
+        <div class="inst-desc">
+          אלוף אוקראינה (1991), אלוף ישראל (2010), קפטן ומאמן נבחרת ישראל לנשים
+          (2006–2013).<br />
+          חניכיו זכו מעל 25 מדליות באלופיות הארץ לנוער.
+        </div>
+        <div class="inst-phone ltr">
+          <a href="tel:+972545305402">054-5305402</a>
+        </div>
       </div>
     </li>
   </ul>
