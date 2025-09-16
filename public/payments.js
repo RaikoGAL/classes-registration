@@ -1,95 +1,130 @@
 // ===== Rishon Chess Club — registration save + redirect to Meshulam =====
 const isSameOrigin =
-    location.origin.includes('localhost:3000') ||
-    location.origin.includes('127.0.0.1:3000') ||
-    location.origin.includes('classes-registration.onrender.com');
-  const API_BASE = isSameOrigin ? '' : 'https://classes-registration.onrender.com';
+  location.origin.includes("localhost:3000") ||
+  location.origin.includes("127.0.0.1:3000") ||
+  location.origin.includes("classes-registration.onrender.com");
+const API_BASE = isSameOrigin
+  ? ""
+  : "https://classes-registration.onrender.com";
 
-function isValidPhone(value){
-  const v = String(value||'').replace(/[^\d+]/g,'');
+function isValidPhone(value) {
+  const v = String(value || "").replace(/[^\d+]/g, "");
   // תומך ב-05XXXXXXXX וב-+9725XXXXXXX
   return /^05\d{8}$/.test(v) || /^\+9725\d{8}$/.test(v);
 }
-function isValidEmail(value){
-  const v = String(value||'').trim();
-  if(!v) return true; // אימייל אינו חובה; אם יש — נבדוק
+function isValidEmail(value) {
+  const v = String(value || "").trim();
+  if (!v) return true; // אימייל אינו חובה; אם יש — נבדוק
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
 }
 
-function getGroup(groupId){
-  return window.RCC?.classGroups?.find(g => g.id === groupId);
+function getGroup(groupId) {
+  return window.RCC?.classGroups?.find((g) => g.id === groupId);
 }
-function groupHasTwoSessions(grp){
+function groupHasTwoSessions(grp) {
   return Array.isArray(grp?.sessions) && grp.sessions.length >= 2;
 }
 
-async function guardAndPay(e){
+async function guardAndPay(e) {
   e && e.preventDefault && e.preventDefault();
 
-  const groupId = (document.body.dataset.group || document.getElementById('groupKey')?.value || '').trim();
-  const selEl   = document.getElementById('meetingOption');
-  const grp     = getGroup(groupId);
+  const groupId = (
+    document.body.dataset.group ||
+    document.getElementById("groupKey")?.value ||
+    ""
+  ).trim();
+  const selEl = document.getElementById("meetingOption");
+  const grp = getGroup(groupId);
 
-  const first = document.getElementById('firstName')?.value?.trim() || '';
-  const last  = document.getElementById('lastName')?.value?.trim()  || '';
-  const phone = document.getElementById('phone')?.value?.trim()     || '';
-  const email = document.getElementById('email')?.value?.trim()     || '';
-  const notes = document.getElementById('notes')?.value?.trim()     || '';
+  const first = document.getElementById("firstName")?.value?.trim() || "";
+  const last = document.getElementById("lastName")?.value?.trim() || "";
+  const phone = document.getElementById("phone")?.value?.trim() || "";
+  const email = document.getElementById("email")?.value?.trim() || "";
+  const notes = document.getElementById("notes")?.value?.trim() || "";
 
   // 1) ולידציה בסיסית
-  if(!first || !last){ alert('נא למלא שם פרטי ושם משפחה'); (first?document.getElementById('lastName'):document.getElementById('firstName'))?.focus(); return false; }
-  if(!isValidPhone(phone)){ alert('מספר טלפון לא תקין'); document.getElementById('phone')?.focus(); return false; }
-  if(!isValidEmail(email)){ alert('אימייל לא תקין'); document.getElementById('email')?.focus(); return false; }
+  if (!first || !last) {
+    alert("נא למלא שם פרטי ושם משפחה");
+    (first
+      ? document.getElementById("lastName")
+      : document.getElementById("firstName")
+    )?.focus();
+    return false;
+  }
+  if (!isValidPhone(phone)) {
+    alert("מספר טלפון לא תקין");
+    document.getElementById("phone")?.focus();
+    return false;
+  }
+  if (!isValidEmail(email)) {
+    alert("אימייל לא תקין");
+    document.getElementById("email")?.focus();
+    return false;
+  }
 
   // 2) קביעת אופציה: דו-יומי דורש בחירה; חד-יומי -> single
-  let option = '';
+  let option = "";
   if (groupHasTwoSessions(grp)) {
-    option = selEl?.value || '';
-    if(!option){ alert('נא לבחור ימי מפגש לפני מעבר לתשלום'); selEl?.focus(); return false; }
+    option = selEl?.value || "";
+    if (!option) {
+      alert("נא לבחור ימי מפגש לפני מעבר לתשלום");
+      selEl?.focus();
+      return false;
+    }
   } else {
-    option = 'single';
+    option = "single";
   }
 
   // 3) ניסיון שמירה בצד שרת (נשתמש ב-/api/register שתואם לפורמט הזה)
-  try{
+  try {
     console.log("gdfgfdhfd");
-    
-    const r = await fetch(`/api/enroll`, {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      credentials: 'same-origin',
-      allowedHeaders: ['Content-Type', 'Authorization'],
-      body:JSON.stringify({
-        groupId,
-        selected_option: option,
+
+    // שמירה לפני מעבר לתשלום
+    const r = await fetch("/api/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "same-origin",
+      body: JSON.stringify({
+        groupId, // מזהה הקבוצה (יישמר בעמודת class_id)
+        selected_option: option, // 'day1' | 'day2' | 'both' | 'single'
         first_name: first,
-        last_name:  last,
-        phone, email, notes
-      })
+        last_name: last,
+        phone,
+        email,
+        notes,
+      }),
     });
+
     // אם שרת יחזיר קישור תשלום – נשתמש בו, אחרת ניפול לפולבק
-    if(r.ok){
-      const data = await r.json().catch(()=> ({}));
-      if(data && data.paymentUrl){
+    if (r.ok) {
+      const data = await r.json().catch(() => ({}));
+      if (data && data.paymentUrl) {
         location.href = data.paymentUrl;
         return true;
       }
     }
-  }catch(err){
+  } catch (err) {
     // ניפול לפולבק
   }
 
   // 4) פולבק Meshulam מה-data המקומי
-  if(!grp){
-    alert('לא נמצאה קבוצה עבור התשלום.'); return false;
+  if (!grp) {
+    alert("לא נמצאה קבוצה עבור התשלום.");
+    return false;
   }
   let url = grp.meshulam || null;
-  if(grp.meshulamOptions){
-    url = option==='day1' ? grp.meshulamOptions.day1
-        : option==='day2' ? grp.meshulamOptions.day2
+  if (grp.meshulamOptions) {
+    url =
+      option === "day1"
+        ? grp.meshulamOptions.day1
+        : option === "day2"
+        ? grp.meshulamOptions.day2
         : grp.meshulamOptions.both;
   }
-  if(!url || url==='#'){ alert('קישור התשלום יפורסם בהמשך.'); return false; }
+  if (!url || url === "#") {
+    alert("קישור התשלום יפורסם בהמשך.");
+    return false;
+  }
 
   location.href = url;
   return true;
