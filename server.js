@@ -144,48 +144,27 @@ app.post("/api/auth/login", async (req, res) => {
 /* ===== Helpers: insert with new/old schema ===== */
 async function insertEnrollmentSmart({
   class_id,
-  first_name,
-  last_name,
+  full_name,
   email,
   phone,
   notes,
   selected_option,
 }) {
-  // קודם ננסה את הסכימה החדשה (first_name/last_name)
-  const qNew = `
-    INSERT INTO enrollments (class_id, first_name, last_name, email, phone, notes, selected_option)
-    VALUES ($1,$2,$3,$4,$5,$6,$7)
-    RETURNING id
-  `;
-  const qOld = `
+  // Insert into the new schema with full_name only
+  const q = `
     INSERT INTO enrollments (class_id, full_name, email, phone, notes, selected_option)
     VALUES ($1,$2,$3,$4,$5,$6)
     RETURNING id
   `;
-  try {
-    const r = await pool.query(qNew, [
-      class_id,
-      first_name || null,
-      last_name || null,
-      email,
-      phone,
-      notes,
-      selected_option,
-    ]);
-    return r.rows[0].id;
-  } catch (e) {
-    // fallback לעמודה ישנה full_name אם אין את שתי העמודות החדשות
-    const full_name = `${first_name || ""} ${last_name || ""}`.trim();
-    const r2 = await pool.query(qOld, [
-      class_id,
-      full_name || null,
-      email,
-      phone,
-      notes,
-      selected_option,
-    ]);
-    return r2.rows[0].id;
-  }
+  const r = await pool.query(q, [
+    class_id,
+    full_name,
+    email,
+    phone,
+    notes,
+    selected_option,
+  ]);
+  return r.rows[0].id;
 }
 
 /* ===== Enroll / Register ===== */
@@ -193,17 +172,15 @@ async function insertEnrollmentSmart({
 // פרונט חדש: first_name/last_name + selected_option
 app.post("/api/register", async (req, res) => {
   const b = req.body || {};
-  const class_id = b.groupId || b.class_id || null;
-  const first_name = (b.first_name || "").trim();
-  const last_name = (b.last_name || "").trim();
-  const full_name = (b.full_name || "").trim(); // תאימות ישנה, אם נשלח
+  const class_id = b.class_id || null;
+  const full_name = (b.full_name || "").trim();
   const email = b.email || null;
   const phone = b.phone || null;
   const notes = b.notes || null;
   let selected_option = b.selected_option || null;
 
-  if (!class_id || (!first_name && !last_name && !full_name)) {
-    return res.status(400).json({ error: "missing class_id or name" });
+  if (!class_id || !full_name) {
+    return res.status(400).json({ error: "missing class_id or full_name" });
   }
   if (!["day1", "day2", "both", "single", null].includes(selected_option)) {
     selected_option = null;
@@ -212,8 +189,7 @@ app.post("/api/register", async (req, res) => {
   try {
     const id = await insertEnrollmentSmart({
       class_id,
-      first_name: first_name || full_name.split(" ")[0] || "",
-      last_name: last_name || full_name.split(" ").slice(1).join(" ") || "",
+      full_name,
       email,
       phone,
       notes,

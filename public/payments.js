@@ -38,17 +38,15 @@ async function guardAndPay(e) {
 
   const first = document.getElementById("firstName")?.value?.trim() || "";
   const last = document.getElementById("lastName")?.value?.trim() || "";
+  const full_name = [first, last].filter(Boolean).join(" ").trim();
   const phone = document.getElementById("phone")?.value?.trim() || "";
   const email = document.getElementById("email")?.value?.trim() || "";
   const notes = document.getElementById("notes")?.value?.trim() || "";
 
   // 1) ולידציה בסיסית
-  if (!first || !last) {
-    alert("נא למלא שם פרטי ושם משפחה");
-    (first
-      ? document.getElementById("lastName")
-      : document.getElementById("firstName")
-    )?.focus();
+  if (!full_name) {
+    alert("נא למלא שם מלא");
+    document.getElementById("firstName")?.focus();
     return false;
   }
   if (!isValidPhone(phone)) {
@@ -85,10 +83,9 @@ async function guardAndPay(e) {
       headers: { "Content-Type": "application/json" },
       credentials: "same-origin",
       body: JSON.stringify({
-        groupId, // מזהה הקבוצה (יישמר בעמודת class_id)
-        selected_option: option, // 'day1' | 'day2' | 'both' | 'single'
-        first_name: first,
-        last_name: last,
+        class_id: groupId,
+        selected_option: option,
+        full_name,
         phone,
         email,
         notes,
