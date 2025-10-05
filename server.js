@@ -115,7 +115,10 @@ app.get("/health", async (_req, res) => {
     await pool.query("SELECT 1");
     res.json({ ok: true, db: "up" });
   } catch (e) {
-    res.status(500).json({ ok: false, error: String(e) });
+    console.error("Health check error:", e);
+    res
+      .status(500)
+      .json({ ok: false, error: String(e), stack: e.stack, details: e });
   }
 });
 
@@ -318,7 +321,10 @@ app.get("/debug/db", async (req, res) => {
     const r = await pool.query("SELECT NOW()");
     res.json({ ok: true, now: r.rows[0].now });
   } catch (e) {
-    res.status(500).json({ ok: false, error: e.message });
+    console.error("DB debug error:", e);
+    res
+      .status(500)
+      .json({ ok: false, error: String(e), stack: e.stack, details: e });
   }
 });
 
