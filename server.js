@@ -2,10 +2,9 @@ import express from "express";
 import crypto from "crypto";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-const { Pool } = require("pg");
+import { Pool } from "pg";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
-// import cors from "cors"; // לא צריך אם הכל אותו דומיין
 dotenv.config();
 
 const app = express();
