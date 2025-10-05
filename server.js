@@ -49,6 +49,14 @@ const pool = new Pool(
       }
 );
 
+console.log("DB config:", {
+  host: process.env.PGHOST,
+  port: process.env.PGPORT,
+  database: process.env.PGDATABASE,
+  user: process.env.PGUSER,
+  ssl: useSSL,
+});
+
 const JWT_SECRET =
   process.env.JWT_SECRET || crypto.randomBytes(32).toString("hex");
 
@@ -304,6 +312,23 @@ app.post("/api/admin/mark-status", adminGuard, async (req, res) => {
   res.json({ ok: true });
 });
 
+/* ===== Debug ===== */
+app.get("/debug/db", async (req, res) => {
+  try {
+    const r = await pool.query("SELECT NOW()");
+    res.json({ ok: true, now: r.rows[0].now });
+  } catch (e) {
+    res.status(500).json({ ok: false, error: e.message });
+  }
+});
+
 /* ===== Start ===== */
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log("listening on", PORT));
+
+process.on("unhandledRejection", (reason, promise) => {
+  console.error("Unhandled Rejection:", reason);
+});
+process.on("uncaughtException", (err) => {
+  console.error("Uncaught Exception:", err);
+});
