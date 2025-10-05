@@ -222,10 +222,13 @@ app.post("/api/enroll", async (req, res) => {
   }
 
   try {
+    // Always combine first_name and last_name into full_name
+    const combined_full_name =
+      full_name || [first_name, last_name].filter(Boolean).join(" ").trim();
+
     const id = await insertEnrollmentSmart({
       class_id,
-      first_name: first_name || full_name.split(" ")[0] || "",
-      last_name: last_name || full_name.split(" ").slice(1).join(" ") || "",
+      full_name: combined_full_name,
       email,
       phone,
       notes,
