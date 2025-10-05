@@ -2,7 +2,7 @@ import express from "express";
 import crypto from "crypto";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import pg from "pg";
+const { Pool } = require("pg");
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
 // import cors from "cors"; // לא צריך אם הכל אותו דומיין
@@ -30,7 +30,6 @@ app.use((req, res, next) => {
   next();
 });
 
-const { Pool } = pg;
 const useSSL = !!(process.env.RENDER || process.env.NODE_ENV === "production");
 
 const pool = new Pool(
