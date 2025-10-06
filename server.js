@@ -31,6 +31,9 @@ app.use((req, res, next) => {
 
 const useSSL = !!(process.env.RENDER || process.env.NODE_ENV === "production");
 
+import pg from "pg";
+const { Pool } = pg;
+
 const pool = new Pool({
   user: "postgres.qhfylzvudhdekgarnwxa",
   password: "2YC8!91236!@",
@@ -39,6 +42,16 @@ const pool = new Pool({
   database: "postgres",
 });
 
+let final = 0;
+try {
+  for(let i=0; i<=100;i++){
+    const res = await pool.query("SELECT NOW()");
+    final = i
+    }
+} finally {
+  await pool.end();
+  console.log("checks finished out og 100:", final)
+}
 console.log("DB config:", {
   host: process.env.PGHOST,
   port: process.env.PGPORT,
@@ -102,8 +115,8 @@ function adminGuard(req, res, next) {
 /* ===== Health ===== */
 app.get("/health", async (_req, res) => {
   try {
-    await pool.query("SELECT 1");
-    res.json({ ok: true, db: "up" });
+    const res = await pool.query("SELECT NOW()");
+    res.json({ ok: true, db: "up", time: res });
   } catch (e) {
     console.error("Health check error:", e);
     res
