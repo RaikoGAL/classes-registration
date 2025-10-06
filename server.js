@@ -46,7 +46,6 @@ try {
     final = i
     }
 } finally {
-  await pool.end();
   console.log("checks finished out og 100:", final)
 }
 console.log("DB config:", {
