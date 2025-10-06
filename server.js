@@ -33,7 +33,7 @@ const useSSL = !!(process.env.RENDER || process.env.NODE_ENV === "production");
 
 const pool = new Pool({
   user: "postgres.qhfylzvudhdekgarnwxa",
-  password: process.env.PGPASSWORD,
+  password: "2YC8!91236!@",
   host: "aws-1-eu-central-1.pooler.supabase.com",
   port: 6543,
   database: "postgres",
