@@ -31,14 +31,13 @@ app.use((req, res, next) => {
 
 const useSSL = !!(process.env.RENDER || process.env.NODE_ENV === "production");
 
-const pool = new Pool();
-// {
-//   host: process.env.PGHOST,
-//   port: process.env.PGPORT ? Number(process.env.PGPORT) : undefined,
-//   database: process.env.PGDATABASE,
-//   user: process.env.PGUSER,
-//   password: process.env.PGPASSWORD,
-// }
+const pool = new Pool({
+  user: "postgres.qhfylzvudhdekgarnwxa",
+  password: process.env.PGPASSWORD,
+  host: "aws-1-eu-central-1.pooler.supabase.com",
+  port: 6543,
+  database: "postgres",
+});
 
 console.log("DB config:", {
   host: process.env.PGHOST,
