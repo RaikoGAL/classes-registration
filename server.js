@@ -31,20 +31,14 @@ app.use((req, res, next) => {
 
 const useSSL = !!(process.env.RENDER || process.env.NODE_ENV === "production");
 
-const pool = new Pool(
-  process.env.DATABASE_URL
-    ? {
-        connectionString: process.env.DATABASE_URL,
-        ssl: useSSL ? { rejectUnauthorized: false } : false,
-      }
-    : {
-        host: process.env.PGHOST,
-        port: process.env.PGPORT ? Number(process.env.PGPORT) : undefined,
-        database: process.env.PGDATABASE,
-        user: process.env.PGUSER,
-        password: process.env.PGPASSWORD,
-      }
-);
+const pool = new Pool();
+// {
+//   host: process.env.PGHOST,
+//   port: process.env.PGPORT ? Number(process.env.PGPORT) : undefined,
+//   database: process.env.PGDATABASE,
+//   user: process.env.PGUSER,
+//   password: process.env.PGPASSWORD,
+// }
 
 console.log("DB config:", {
   host: process.env.PGHOST,
