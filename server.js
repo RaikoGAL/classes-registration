@@ -31,9 +31,6 @@ app.use((req, res, next) => {
 
 const useSSL = !!(process.env.RENDER || process.env.NODE_ENV === "production");
 
-import pg from "pg";
-const { Pool } = pg;
-
 const pool = new Pool({
   user: "postgres.qhfylzvudhdekgarnwxa",
   password: "2YC8!91236!@",
